@@ -1,0 +1,4 @@
+data/abstract/.scan/
+node_modules/
+.DS_Store
+data/abstract/scan.log

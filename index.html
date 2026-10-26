@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Safe to Send?</title>
+<meta name="description" content="Paste an address and pick the chain you are sending on: see whether the funds can be reached there, before you send. Catches Abstract wallets, Safes and other smart wallets that only exist on one chain. Read-only, no keys.">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+  :root {
+    --bg: #070b22; --deep: #04061a; --panel: #0c1236; --line: rgba(154, 163, 199, 0.2);
+    --ink: #f4f1e8; --mute: #9aa3c7; --lime: #ddf24a; --amber: #ffb547; --red: #ff6b6b; --blue: #8fb4ff; --glass: rgba(10, 15, 48, 0.72);
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: radial-gradient(1100px 600px at 80% -10%, rgba(42, 59, 214, 0.28), transparent 60%), var(--deep); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  a { color: var(--lime); text-underline-offset: 3px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+  nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 17px; }
+  .brand img { width: 30px; height: 30px; border-radius: 8px; }
+  nav .links { display: flex; gap: 18px; font-size: 14.5px; }
+  nav .links a { color: var(--mute); text-decoration: none; } nav .links a:hover { color: var(--ink); }
+  .banner { margin: 4px 0 26px; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255, 181, 71, 0.45); background: rgba(255, 181, 71, 0.08); font-size: 14.5px; }
+  .banner b { color: var(--amber); }
+  .hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 36px; align-items: start; }
+  .chip { display: inline-flex; gap: 8px; align-items: center; font: 600 12px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--mute); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; margin: 0 0 18px; }
+  h1 { font-size: clamp(40px, 6vw, 64px); line-height: 1.02; margin: 0 0 12px; letter-spacing: -0.02em; }
+  h1 .hl { color: var(--lime); }
+  .tagline { font-size: 22px; font-weight: 700; margin: 0 0 14px; }
+  .lede { color: #d6d8e6; font-size: 17px; margin: 0 0 22px; max-width: 34em; }
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 8px 0 0; }
+  .stats div { padding: 0 16px; border-left: 1px solid var(--line); } .stats div:first-child { padding-left: 0; border-left: 0; }
+  .stats dt { font-weight: 800; font-size: 19px; color: var(--lime); } .stats dd { margin: 2px 0 0; color: var(--mute); font-size: 13.5px; }
+  .panel { padding: 22px; border-radius: 20px; background: var(--glass); border: 1px solid var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 30px 80px -40px rgba(42, 59, 214, 0.6); }
+  .panel h2 { font-size: 22px; margin: 0 0 14px; }
+  .panel form { display: grid; gap: 10px; }
+  .panel label { font: 600 12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
+  .panel input, .panel select { width: 100%; background: #050822; color: var(--ink); border: 1px solid rgba(154, 163, 199, 0.35); border-radius: 12px; padding: 13px 14px; font: 14px var(--mono); }
+  button.go { margin-top: 4px; background: var(--lime); color: #04061a; border: 0; border-radius: 12px; padding: 14px; font: 800 16px system-ui, sans-serif; cursor: pointer; box-shadow: 0 10px 30px -10px rgba(221, 242, 74, 0.7); }
+  button.go:disabled { opacity: 0.6; cursor: wait; }
+  input:focus-visible, button:focus-visible, select:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+  .small { color: var(--mute); font-size: 13px; margin: 6px 0 0; }
+  .examples { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
+  .examples h3 { font-size: 15px; margin: 6px 0 2px; }
+  .examples button { width: 100%; display: flex; gap: 10px; align-items: center; justify-content: space-between; background: #070b2a; color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font: 14px system-ui, sans-serif; cursor: pointer; text-align: left; }
+  .examples button:hover { border-color: rgba(221, 242, 74, 0.5); }
+  .ex-tag { font: 600 11px var(--mono); color: var(--mute); white-space: nowrap; }
+  #out { margin: 30px 0 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
+  .card header { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-bottom: 12px; }
+  .pill { font: 700 12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; border-radius: 999px; padding: 5px 11px; border: 1px solid; white-space: nowrap; }
+  .l-safe { color: var(--lime); } .l-caution { color: var(--amber); } .l-stop { color: var(--red); } .l-unknown { color: var(--blue); }
+  .card.stop { border-color: rgba(255, 107, 107, 0.55); box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.15), 0 20px 60px -30px rgba(255, 107, 107, 0.5); }
+  .card.safe { border-color: rgba(221, 242, 74, 0.45); }
+  .title { font-size: 20px; font-weight: 700; margin: 0 0 12px; }
+  .reasons { margin: 0 0 16px; padding-left: 20px; } .reasons li { margin: 6px 0; }
+  .addr { font: 13.5px var(--mono); color: var(--mute); overflow-wrap: anywhere; }
+  .chains { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
+  .chains li { font: 12.5px var(--mono); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; color: var(--mute); }
+  .chains li.c-key { color: var(--lime); border-color: rgba(221, 242, 74, 0.4); }
+  .chains li.c-contract { color: var(--amber); border-color: rgba(255, 181, 71, 0.45); }
+  .chains li.c-target { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .chains li.c-unread { color: #6b7299; border-style: dashed; }
+  .foot { color: var(--mute); font-size: 13.5px; margin-top: 16px; }
+  .err { border-color: var(--red); }
+  section.how { margin: 64px 0 0; }
+  section.how h2 { font-size: 28px; margin: 0 0 18px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .grid3 .card h3 { margin: 0 0 8px; font-size: 18px; }
+  .grid3 .card p { margin: 0; color: #d6d8e6; font-size: 15px; }
+  .k { color: var(--lime); } .w { color: var(--amber); } .x { color: var(--red); }
+  footer { margin: 64px 0 40px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--mute); font-size: 13.5px; }
+  @media (max-width: 860px) { .hero, .grid3 { grid-template-columns: 1fr; } nav .links { display: none; } }
+  @media (max-width: 560px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; } .stats div:nth-child(3) { padding-left: 0; border-left: 0; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#top"><img src="icons/favicon.svg" alt=""><span>Safe to Send?</span></a>
+    <div class="links"><a href="#how">How it works</a><a href="#abstract">Abstract wallets</a><a href="https://cryppit.github.io/wheres-my-withdrawal/">Cryppit</a><a href="https://github.com/cryppit/safe-to-send" target="_blank" rel="noopener noreferrer">GitHub</a></div>
+  </nav>
+
+  <p class="banner" id="abstract"><b>Abstract shuts down on 15 Dec 2026.</b> Moving funds out? Never send to your Abstract wallet address on another chain: on BNB Chain, Ethereum, Base and the rest, nothing can ever reach them. This page keeps a list of every Abstract wallet, so it can warn you even after Abstract is gone.</p>
+
+  <div class="hero" id="top">
+    <div>
+      <p class="chip"><span>‹/›</span> Open source · MIT · Read-only</p>
+      <h1>Safe to <span class="hl">Send?</span></h1>
+      <p class="tagline">Check an address before you send.</p>
+      <p class="lede">An address that looks like any other can be a smart wallet that only exists on one chain. Send to it on the wrong chain and the money can be gone for good. Paste the address and pick the chain you are sending on: this reads the address on every chain and tells you whether funds sent there can be reached.</p>
+      <dl class="stats">
+        <div><dt id="stat-chains">20 chains</dt><dd>read at once</dd></div>
+        <div><dt id="stat-agw">Abstract</dt><dd id="stat-agw-dd">wallets archived</dd></div>
+        <div><dt>0 keys</dt><dd>nothing to sign</dd></div>
+        <div><dt>MIT</dt><dd>open source</dd></div>
+      </dl>
+    </div>
+
+    <div class="panel" id="check">
+      <h2>Check an address</h2>
+      <form id="f">
+        <label for="addr">Address you are sending to</label>
+        <input id="addr" autocomplete="off" spellcheck="false" placeholder="0x… the recipient address" required>
+        <label for="chain">Chain you are sending on</label>
+        <select id="chain" aria-label="Chain"></select>
+        <button class="go" id="go" type="submit">Check address →</button>
+      </form>
+      <p class="small">Your browser asks public RPCs directly. No wallet, no keys, nothing signed.</p>
+      <ul class="examples" id="examples">
+        <li><h3>Real addresses</h3></li>
+        <li><button type="button" data-a="0xd8b17dbd34391993ee11b501e6275bbc715e2529" data-c="56"><span>An Abstract wallet, sent on BNB Chain</span><span class="ex-tag">lost</span></button></li>
+        <li><button type="button" data-a="0xd8b17dbd34391993ee11b501e6275bbc715e2529" data-c="324"><span>The same wallet, sent on ZKsync Era</span><span class="ex-tag">owner can recover</span></button></li>
+        <li><button type="button" data-a="0x1d31f4bdc557bca4df3d238f089cecb3b7135fda" data-c="56"><span>A Safe that only exists on Ethereum</span><span class="ex-tag">don't send</span></button></li>
+        <li><button type="button" data-a="0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" data-c="8453"><span>vitalik.eth (EIP-7702), sent on Base</span><span class="ex-tag">safe</span></button></li>
+        <li><button type="button" data-a="0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" data-c="1"><span>The USDC contract itself</span><span class="ex-tag">don't send</span></button></li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="out" aria-live="polite"></div>
+
+  <section class="how" id="how">
+    <h2>Why one address can be safe on one chain and lost on another</h2>
+    <div class="grid3">
+      <div class="card"><h3 class="k">Key wallets work everywhere</h3><p>A normal wallet address comes from a private key. The same key controls that address on every EVM chain, so funds sent on the "wrong" EVM chain can still be reached by importing the key there. EIP-7702 accounts are key wallets too.</p></div>
+      <div class="card"><h3 class="w">Smart wallets live on one chain</h3><p>Safes, Abstract wallets and other smart wallets are contracts. They exist only on the chains where they were created. On any other chain the same address has no code and no key behind it. Some can be created there later at the same address; some never can.</p></div>
+      <div class="card"><h3 class="x">Abstract wallets can't follow you</h3><p>Abstract runs EraVM, which computes contract addresses differently from standard EVM chains. An Abstract wallet can never be recreated on BNB Chain, Ethereum or Base. ZKsync Era also runs EraVM and has Abstract's wallet contracts, so there its owner can most likely recreate it.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Safe to Send? is a <a href="https://github.com/cryppit">Cryppit</a> tool: keyless, read-only, open source (MIT). It reads public RPCs and a list of Abstract wallets kept in this site; it never holds keys, connects a wallet or signs anything. A "safe" answer is about whether funds can be reached, not about who the address belongs to: check that yourself.</p>
+    <p>Independent project, not affiliated with Abstract, Safe, or any chain listed. <span id="archive-line"></span></p>
+  </footer>
+</div>
+
+<script type="module">
+  import { check } from "./src/check.js";
+  import { CHAINS, chainName } from "./src/chains.js";
+
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, attrs = {}, text) => { const e = document.createElement(tag); Object.assign(e, attrs); if (text != null) e.textContent = text; return e; };
+
+  const select = $("chain");
+  for (const c of CHAINS) select.append(el("option", { value: String(c.id) }, c.name));
+  select.value = "56";
+  $("stat-chains").textContent = `${CHAINS.length} chains`;
+
+  // The archive: one small file per first byte of the address, fetched only when needed.
+  const loadShard = async (key) => {
+    const r = await fetch(`data/abstract/agw/${key}.bin`);
+    return r.ok ? new Uint8Array(await r.arrayBuffer()) : null;
+  };
+  fetch("data/abstract/manifest.json").then((r) => (r.ok ? r.json() : null)).then((m) => {
+    if (!m) return;
+    $("stat-agw").textContent = `${(m.wallets / 1e6).toFixed(1)}M`;
+    $("stat-agw-dd").textContent = "Abstract wallets archived";
+    $("archive-line").textContent = `Abstract wallet archive: ${m.wallets.toLocaleString("en-US")} wallets up to Abstract block ${m.toBlock} (${m.toBlockTime.slice(0, 10)}).`;
+  }).catch(() => {});
+
+  const LABEL = { safe: "Safe", caution: "Caution", stop: "Stop", unknown: "Can't tell" };
+  const chip = (id, c, target) => {
+    const k = c.code == null ? "unread" : c.code === "0x" ? (c.nonce > 0 ? "key" : "none") : /^0xef0100/i.test(c.code) ? "key" : "contract";
+    const what = { unread: "no answer", key: c.code === "0x" ? `key wallet, ${c.nonce} tx` : "EIP-7702", none: "unused", contract: c.safe ? `Safe ${c.safe.threshold}-of-${c.safe.owners}` : c.token ? `${c.token.symbol} token` : "contract" }[k];
+    return el("li", { className: `c-${k}${id === target ? " c-target" : ""}`, title: id === target ? "the chain you are sending on" : "" }, `${chainName(id)}: ${what}`);
+  };
+
+  function render(r) {
+    const out = $("out");
+    out.replaceChildren();
+    if (r.error) { out.append(el("div", { className: "card err" }, r.message)); return; }
+    const v = r.verdict, f = r.facts;
+    const card = el("article", { className: `card ${v.level}` });
+    const head = el("header");
+    head.append(el("span", { className: `pill l-${v.level}` }, LABEL[v.level]), el("span", { className: "addr" }, `${f.address} on ${chainName(f.target)}`));
+    card.append(head, el("p", { className: "title" }, v.title));
+    const ul = el("ul", { className: "reasons" });
+    for (const reason of v.reasons) ul.append(el("li", {}, reason));
+    card.append(ul);
+    const seen = Object.entries(f.chains).map(([id, c]) => [Number(id), c]).filter(([id, c]) => id === f.target || c.code == null || c.code !== "0x" || c.nonce > 0);
+    card.append(el("p", { className: "small" }, "What each chain says about this address (only chains where it was seen, plus the one you picked):"));
+    const chains = el("ul", { className: "chains" });
+    for (const [id, c] of seen) chains.append(chip(id, c, f.target));
+    card.append(chains);
+    if (f.abstractWallet) card.append(el("p", { className: "foot" }, f.abstractSource === "archive" ? "Found in the archive of Abstract wallets." : "Confirmed by Abstract's wallet registry."));
+    card.append(el("p", { className: "foot" }, `Read from public RPCs on ${Object.keys(f.chains).length} chains, at the latest block. Nothing was signed.`));
+    out.append(card);
+    out.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function run(address, chainId) {
+    const go = $("go");
+    go.disabled = true; go.textContent = "Reading 20 chains…";
+    try { render(await check(address.trim(), Number(chainId), { loadShard })); }
+    catch (e) { render({ error: "failed", message: `Something went wrong: ${e.message}` }); }
+    finally { go.disabled = false; go.textContent = "Check address →"; }
+  }
+
+  $("f").addEventListener("submit", (e) => { e.preventDefault(); run($("addr").value, select.value); });
+  for (const b of document.querySelectorAll("#examples button")) {
+    b.addEventListener("click", () => { $("addr").value = b.dataset.a; select.value = b.dataset.c; run(b.dataset.a, b.dataset.c); });
+  }
+  // A link can carry the check: ?address=0x…&chain=56
+  const q = new URLSearchParams(location.search);
+  if (q.get("address")) { $("addr").value = q.get("address"); if (q.get("chain")) select.value = q.get("chain"); run($("addr").value, select.value); }
+</script>
+</body>
+</html>

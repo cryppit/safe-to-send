@@ -1,0 +1,13 @@
+{
+  "name": "safe-to-send",
+  "version": "0.1.0",
+  "description": "Paste an address and a chain: see whether funds sent there can be reached, before you send. Read-only, keyless.",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "archive:abstract": "node scripts/archive-abstract.mjs",
+    "verify:abstract": "node scripts/verify-abstract.mjs"
+  }
+}

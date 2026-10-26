@@ -1,0 +1,22 @@
+[
+ {
+  "address": "0x0000000000000000000000000000000000008006",
+  "blockHash": "0xde6face66b11db2c3675ff7a18d47272e9faf0359ecd51507d31b5cd3371c13d",
+  "blockNumber": "0x12c3a",
+  "blockTimestamp": "0x67802c01",
+  "data": "0x",
+  "l1BatchNumber": "0xdd",
+  "logIndex": "0x2",
+  "logType": null,
+  "removed": false,
+  "topics": [
+   "0x290afdae231a3fc0bbae8b1af63698b0a1d79b21ad17df0342dfb952fe74f8e5",
+   "0x0000000000000000000000009b947df68d35281c972511b3e7bc875926f26c1a",
+   "0x0100003316a98e88b9e8931575675eed8e30eee97abeff3816fb98333ab085bc",
+   "0x000000000000000000000000ea7175b8e240aba8ca4632b160918597c7a0d12d"
+  ],
+  "transactionHash": "0x20afbf8a28b3d75f6a1a329d20998ea5dd356c38a812d0ca14f3e77a82d67988",
+  "transactionIndex": "0x0",
+  "transactionLogIndex": "0x2"
+ }
+]
