@@ -21,7 +21,7 @@ jobs:
       - run: node --test 'test/*.test.js'
       - run: |
           mkdir -p _site/data/abstract
-          cp -r index.html og.png src icons logos _site/
+          cp -r index.html og.png src icons logos art _site/
           cp -r data/abstract/agw data/abstract/manifest.json _site/data/abstract/
       - uses: actions/upload-pages-artifact@v3
         with:

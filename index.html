@@ -22,94 +22,229 @@
     --bg: #070b22; --deep: #04061a; --panel: #0c1236; --line: rgba(154, 163, 199, 0.2);
     --ink: #f4f1e8; --mute: #9aa3c7; --lime: #ddf24a; --amber: #ffb547; --red: #ff6b6b; --blue: #8fb4ff; --glass: rgba(10, 15, 48, 0.72);
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --wallet: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3'/%3E%3Cpath d='M4 7.5V17a2 2 0 0 0 2 2h14V8H6.5A2.5 2.5 0 0 1 4 7.5z'/%3E%3Ccircle cx='16' cy='13.5' r='1.3' fill='%23000'/%3E%3C/svg%3E");
     color-scheme: dark;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: radial-gradient(1100px 600px at 80% -10%, rgba(42, 59, 214, 0.28), transparent 60%), var(--deep); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  html { scroll-behavior: smooth; }
   a { color: var(--lime); text-underline-offset: 3px; }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
-  nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; }
-  .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 17px; }
-  .brand img { width: 30px; height: 30px; border-radius: 8px; }
-  nav .links { display: flex; gap: 18px; font-size: 14.5px; }
-  nav .links a { color: var(--mute); text-decoration: none; } nav .links a:hover { color: var(--ink); }
-  .banner { margin: 4px 0 26px; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255, 181, 71, 0.45); background: rgba(255, 181, 71, 0.08); font-size: 14.5px; }
-  .banner b { color: var(--amber); }
-  .hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 36px; align-items: start; }
-  .chip { display: inline-flex; gap: 8px; align-items: center; font: 600 12px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--mute); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; margin: 0 0 18px; }
-  h1 { font-size: clamp(40px, 6vw, 64px); line-height: 1.02; margin: 0 0 12px; letter-spacing: -0.02em; }
-  h1 .hl { color: var(--lime); }
-  .tagline { font-size: 22px; font-weight: 700; margin: 0 0 14px; }
-  .lede { color: #d6d8e6; font-size: 17px; margin: 0 0 22px; max-width: 34em; }
-  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 8px 0 0; }
-  .stats div { padding: 0 16px; border-left: 1px solid var(--line); } .stats div:first-child { padding-left: 0; border-left: 0; }
-  .stats dt { font-weight: 800; font-size: 19px; color: var(--lime); } .stats dd { margin: 2px 0 0; color: var(--mute); font-size: 13.5px; }
-  .panel { padding: 22px; border-radius: 20px; background: var(--glass); border: 1px solid var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 30px 80px -40px rgba(42, 59, 214, 0.6); }
+  input:focus-visible, button:focus-visible, select:focus-visible, a:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+  .muted { color: var(--mute); }
+  /* Logos sit on a light disc so the dark ones (Abstract, ZKsync, Linea, Sonic) show on the night background. */
+  .lg { border-radius: 50%; background: #eef0fa; padding: 2px; flex: none; }
+  img[src$="/mantle.svg"].lg { background: #000; }  /* the only all-white logo */
+
+  .top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 24px; max-width: 1240px; margin: 0 auto; padding: 14px 20px; background: linear-gradient(rgba(4, 6, 26, 0.96) 70%, rgba(4, 6, 26, 0)); }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 800; font-size: 19px; letter-spacing: -0.01em; }
+  .brand span { white-space: nowrap; }
+  .brand img { border-radius: 8px; filter: drop-shadow(0 0 8px rgba(221, 242, 74, 0.45)); }
+  .top-links { display: flex; gap: 22px; margin-left: 12px; }
+  .top-links a { color: var(--ink); text-decoration: none; font-size: 15px; opacity: 0.85; }
+  .top-links a:hover { opacity: 1; color: var(--lime); }
+  .gh { margin-left: auto; border: 1px solid var(--line); border-radius: 12px; padding: 9px 16px; color: var(--ink); text-decoration: none; font-weight: 600; font-size: 14px; }
+  .gh:hover { border-color: var(--lime); }
+  @media (max-width: 760px) { .top-links { display: none; } }
+  @media (max-width: 420px) { .brand { font-size: 16px; } .gh { padding: 8px 12px; } }
+
+  main { max-width: 1240px; margin: 0 auto; padding: 8px 20px 64px; position: relative; z-index: 0; }
+  .banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 8px 0 6px; padding: 12px 16px; border-radius: 14px; border: 1px solid rgba(255, 181, 71, 0.45); background: linear-gradient(90deg, rgba(255, 181, 71, 0.12), rgba(255, 181, 71, 0.03)); font-size: 14.5px; scroll-margin-top: 80px; }
+  .banner .count { display: inline-flex; align-items: center; gap: 8px; font: 700 13px var(--mono); color: var(--amber); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+  .banner .count::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 0 rgba(255, 181, 71, 0.7); animation: beacon 2s ease-out infinite; }
+  @keyframes beacon { 70% { box-shadow: 0 0 0 9px rgba(255, 181, 71, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 181, 71, 0); } }
+
+  .hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) minmax(300px, 0.8fr); gap: 24px; align-items: start; padding: 22px 0 10px; }
+  @media (max-width: 1180px) { .hero { grid-template-columns: minmax(0, 1fr) minmax(300px, 0.8fr); } .hero-art { grid-column: 1 / -1; grid-row: 2; } }
+  @media (max-width: 760px) { .hero { grid-template-columns: minmax(0, 1fr); } .hero-art { grid-row: auto; } }
+  .chip { display: inline-flex; gap: 10px; align-items: center; border: 1px solid rgba(221, 242, 74, 0.35); background: rgba(221, 242, 74, 0.06); border-radius: 999px; padding: 6px 14px; font: 600 12px/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); margin: 0; }
+  .chip span { color: var(--lime); }
+  .hero h1 { font-size: clamp(40px, 4.4vw, 64px); line-height: 0.98; letter-spacing: -0.035em; margin: 18px 0 10px; font-weight: 850; }
+  .hl { color: var(--lime); text-shadow: 0 0 40px rgba(221, 242, 74, 0.3); }
+  .tagline { font-size: clamp(22px, 2.3vw, 30px); font-weight: 750; margin: 0 0 14px; letter-spacing: -0.015em; }
+  .lede { font-size: 17px; color: #d9dcec; margin: 0; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin: 26px 0 0; }
+  .btn { display: inline-flex; align-items: center; min-height: 50px; padding: 0 22px; border-radius: 12px; font-weight: 700; text-decoration: none; }
+  .lime-btn { background: var(--lime); color: #04061a; box-shadow: 0 10px 30px -10px rgba(221, 242, 74, 0.7); }
+  .ghost-btn { border: 1px solid var(--line); color: var(--ink); }
+  .ghost-btn:hover { border-color: var(--lime); }
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 30px 0 0; }
+  .stats div { padding: 0 12px; border-left: 1px solid var(--line); min-width: 0; }
+  .stats div:first-child { padding-left: 0; border-left: 0; }
+  .stats dt { font-size: 18px; font-weight: 800; color: var(--lime); white-space: nowrap; }
+  .stats dd { margin: 2px 0 0; color: var(--mute); font-size: 13px; }
+  @media (max-width: 560px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 16px; } .stats div:nth-child(3) { padding-left: 0; border-left: 0; } }
+
+  /* The art: one address on the left, routes to five chains. It lives on Abstract (lime), its owner can recreate it on
+     ZKsync Era (amber), and on BNB Chain, Ethereum and Base the route breaks (red): funds sent there are lost. */
+  .hero-art { position: relative; min-height: 430px; border-radius: 24px; overflow: hidden; background: radial-gradient(closest-side at 25% 50%, rgba(221, 242, 74, 0.12), transparent 70%), url(art/safe.jpg) 62% center / cover no-repeat; box-shadow: inset 0 0 0 1px rgba(143, 180, 255, 0.2), 0 40px 120px -50px rgba(42, 59, 214, 0.8); }
+  .hero-art::after { content: ""; position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 50%, transparent 40%, var(--deep) 100%); pointer-events: none; }
+  .routes { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; overflow: visible; }
+  .rt { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; stroke-dasharray: 6 9; animation: flow 1.4s linear infinite; }
+  .rt.ok { stroke: var(--lime); filter: drop-shadow(0 0 5px rgba(221, 242, 74, 0.9)); }
+  .rt.maybe { stroke: var(--amber); filter: drop-shadow(0 0 5px rgba(255, 181, 71, 0.8)); animation-duration: 1.9s; }
+  .rt.lost { stroke: var(--red); stroke-dasharray: 3 8; opacity: 0.75; animation-duration: 2.6s; filter: drop-shadow(0 0 4px rgba(255, 107, 107, 0.7)); }
+  @keyframes flow { to { stroke-dashoffset: -30; } }
+  .addr-node { position: absolute; z-index: 3; left: 22%; top: 50%; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 8px; font: 700 12px var(--mono); text-shadow: 0 2px 10px #000; }
+  .addr-node i { width: 104px; height: 104px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #222a6a, #070b22 70%); box-shadow: inset 0 0 0 3px var(--lime), inset 0 0 0 10px rgba(221, 242, 74, 0.14), 0 0 0 6px rgba(221, 242, 74, 0.1), 0 0 70px rgba(221, 242, 74, 0.45); animation: pulse 4s ease-in-out infinite; }
+  .addr-node i::before { content: ""; width: 44px; height: 44px; background: var(--lime); -webkit-mask: var(--wallet) center / contain no-repeat; mask: var(--wallet) center / contain no-repeat; filter: drop-shadow(0 0 6px rgba(221, 242, 74, 0.9)); }
+  @keyframes pulse { 0%, 100% { box-shadow: inset 0 0 0 3px var(--lime), inset 0 0 0 10px rgba(221, 242, 74, 0.14), 0 0 0 6px rgba(221, 242, 74, 0.1), 0 0 70px rgba(221, 242, 74, 0.45); } 50% { box-shadow: inset 0 0 0 3px #8fb4ff, inset 0 0 0 10px rgba(143, 180, 255, 0.18), 0 0 0 10px rgba(143, 180, 255, 0.1), 0 0 90px rgba(143, 180, 255, 0.6); } }
+  .dests { position: absolute; z-index: 2; inset: 0; margin: 0; padding: 0; list-style: none; }
+  .dests li { position: absolute; left: 62%; top: var(--y); transform: translate(-26px, -50%); display: flex; align-items: center; gap: 10px; font: 700 13px system-ui, sans-serif; text-shadow: 0 2px 8px #000; white-space: nowrap; }
+  .dests li span { display: grid; line-height: 1.2; }
+  .dests small { font: 700 10.5px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; }
+  .dests img { width: 52px; height: 52px; padding: 9px; border-radius: 50%; background: radial-gradient(circle, #f3efe4 55%, #cfd3e8); box-shadow: 0 0 0 2px var(--c), 0 0 22px var(--g); animation: bob 5s ease-in-out infinite; }
+  .dests .ok { --c: rgba(221, 242, 74, 0.85); --g: rgba(221, 242, 74, 0.45); } .dests .ok small { color: var(--lime); }
+  .dests .maybe { --c: rgba(255, 181, 71, 0.85); --g: rgba(255, 181, 71, 0.4); } .dests .maybe small { color: var(--amber); }
+  .dests .lost { --c: rgba(255, 107, 107, 0.85); --g: rgba(255, 107, 107, 0.35); } .dests .lost small { color: var(--red); }
+  .dests .lost img { filter: saturate(0.55); }
+  .dests li:nth-child(2) img { animation-delay: -1s; } .dests li:nth-child(3) img { animation-delay: -2s; } .dests li:nth-child(4) img { animation-delay: -3s; } .dests li:nth-child(5) img { animation-delay: -4s; }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  .xmark { position: absolute; z-index: 2; left: var(--x); top: var(--y); width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; display: grid; place-items: center; background: #1a0710; color: var(--red); font: 800 12px/1 system-ui, sans-serif; box-shadow: inset 0 0 0 2px var(--red), 0 0 16px rgba(255, 107, 107, 0.6); animation: blink 2.4s ease-in-out infinite; }
+  .xmark:nth-of-type(2) { animation-delay: -0.8s; } .xmark:nth-of-type(3) { animation-delay: -1.6s; }
+  @keyframes blink { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.18); opacity: 0.75; } }
+  .float { position: absolute; z-index: 4; display: grid; gap: 1px; padding: 10px 14px; border-radius: 12px; background: var(--glass); border: 1px solid rgba(221, 242, 74, 0.28); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font-size: 12.5px; box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.8); }
+  .float b { font-size: 13.5px; } .float span { color: var(--mute); }
+  .float.bad { border-color: rgba(255, 107, 107, 0.45); } .float.bad b { color: var(--red); }
+  .f1 { left: 5%; top: 6%; } .f2 { left: 5%; bottom: 6%; }
+  @media (max-width: 560px) { .addr-node i { width: 80px; height: 80px; } .addr-node i::before { width: 34px; height: 34px; } .dests img { width: 40px; height: 40px; padding: 7px; } .dests li { left: 60%; transform: translate(-20px, -50%); font-size: 12px; } .float { display: none; } .hero-art { min-height: 360px; } }
+
+  .panel { padding: 22px; border-radius: 20px; background: var(--glass); border: 1px solid var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 30px 80px -40px rgba(42, 59, 214, 0.6); scroll-margin-top: 80px; }
   .panel h2 { font-size: 22px; margin: 0 0 14px; }
   .panel form { display: grid; gap: 10px; }
   .panel label { font: 600 12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
   .panel input, .panel select { width: 100%; background: #050822; color: var(--ink); border: 1px solid rgba(154, 163, 199, 0.35); border-radius: 12px; padding: 13px 14px; font: 14px var(--mono); }
-  button.go { margin-top: 4px; background: var(--lime); color: #04061a; border: 0; border-radius: 12px; padding: 14px; font: 800 16px system-ui, sans-serif; cursor: pointer; box-shadow: 0 10px 30px -10px rgba(221, 242, 74, 0.7); }
+  .pick { position: relative; }
+  .pick img { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; pointer-events: none; }
+  .panel .pick select { padding-left: 46px; font-family: system-ui, sans-serif; }
+  button.go { width: 100%; min-height: 50px; background: var(--lime); color: #04061a; border: 0; border-radius: 12px; font: 700 15px system-ui; cursor: pointer; box-shadow: 0 10px 30px -12px rgba(221, 242, 74, 0.8); }
   button.go:disabled { opacity: 0.6; cursor: wait; }
-  input:focus-visible, button:focus-visible, select:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
-  .small { color: var(--mute); font-size: 13px; margin: 6px 0 0; }
-  .examples { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
-  .examples h3 { font-size: 15px; margin: 6px 0 2px; }
-  .examples button { width: 100%; display: flex; gap: 10px; align-items: center; justify-content: space-between; background: #070b2a; color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font: 14px system-ui, sans-serif; cursor: pointer; text-align: left; }
-  .examples button:hover { border-color: rgba(221, 242, 74, 0.5); }
-  .ex-tag { font: 600 11px var(--mono); color: var(--mute); white-space: nowrap; }
-  #out { margin: 30px 0 0; }
+  .hint { font-size: 12.5px; color: var(--mute); margin: 12px 0 0; }
+  .panel h3 { margin: 20px 0 10px; font-size: 16px; }
+  .examples { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .examples button { width: 100%; display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(4, 6, 26, 0.5); color: var(--ink); font: 13.5px system-ui, sans-serif; text-align: left; cursor: pointer; }
+  .examples button:hover { border-color: var(--lime); }
+  .ex-tag { font: 600 11px var(--mono); white-space: nowrap; }
+  .t-safe { color: var(--lime); } .t-caution { color: var(--amber); } .t-stop { color: var(--red); }
+
+  /* A result: the route from the address to the chain you picked, played in when a check is new. */
+  #out, footer { max-width: 980px; margin-left: auto; margin-right: auto; }
+  #out { margin-top: 28px; scroll-margin-top: 80px; }
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
-  .card header { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-bottom: 12px; }
+  .card header { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-bottom: 14px; }
   .pill { font: 700 12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; border-radius: 999px; padding: 5px 11px; border: 1px solid; white-space: nowrap; }
   .l-safe { color: var(--lime); } .l-caution { color: var(--amber); } .l-stop { color: var(--red); } .l-unknown { color: var(--blue); }
   .card.stop { border-color: rgba(255, 107, 107, 0.55); box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.15), 0 20px 60px -30px rgba(255, 107, 107, 0.5); }
-  .card.safe { border-color: rgba(221, 242, 74, 0.45); }
+  .card.safe { border-color: rgba(221, 242, 74, 0.45); box-shadow: 0 20px 60px -30px rgba(221, 242, 74, 0.35); }
+  .card.caution { border-color: rgba(255, 181, 71, 0.5); }
   .title { font-size: 20px; font-weight: 700; margin: 0 0 12px; }
   .reasons { margin: 0 0 16px; padding-left: 20px; } .reasons li { margin: 6px 0; }
   .addr { font: 13.5px var(--mono); color: var(--mute); overflow-wrap: anywhere; }
+  .route { list-style: none; margin: 6px 0 22px; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .stop-n { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; min-width: 0; }
+  .stop-n .dot { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; position: relative; z-index: 1; background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--c) 18%, transparent), #04061a 72%); box-shadow: inset 0 0 0 2px var(--c), 0 0 0 4px color-mix(in srgb, var(--c) 12%, transparent), 0 0 22px color-mix(in srgb, var(--c) 40%, transparent); }
+  .stop-n .dot img { width: 30px; height: 30px; }
+  .stop-n .dot .ico { width: 24px; height: 24px; background: var(--c); -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
+  .stop-n b { font-size: 14px; line-height: 1.25; overflow-wrap: anywhere; }
+  .stop-n small { font: 600 11px/1.3 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--c); }
+  .stop-n .badge { position: absolute; right: -5px; bottom: -5px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font: 800 11px/1 system-ui, sans-serif; background: var(--c); color: #04061a; box-shadow: 0 0 0 2px var(--panel); }
+  .stop-n .bar { position: absolute; top: 23px; left: calc(50% + 30px); width: calc(100% - 60px); height: 2px; background: var(--c2, var(--lime)); transform-origin: 0 50%; }
+  .stop-n .bar.broken { background: repeating-linear-gradient(90deg, var(--red) 0 5px, transparent 5px 11px); }
+  .s-ok { --c: var(--lime); } .s-maybe { --c: var(--amber); } .s-lost { --c: var(--red); } .s-unknown { --c: var(--blue); } .s-plain { --c: #8fb4ff; }
+  @media (max-width: 560px) { .stop-n b { font-size: 12.5px; } .stop-n .dot { width: 40px; height: 40px; } .stop-n .dot img { width: 24px; height: 24px; } .stop-n .bar { top: 19px; left: calc(50% + 26px); width: calc(100% - 52px); } }
   .chains { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
   .chains li { display: inline-flex; align-items: center; gap: 6px; font: 12.5px var(--mono); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px 4px 5px; color: var(--mute); }
-  .chains li img, .chainrow img { width: 20px; height: 20px; border-radius: 50%; flex: none; background: #eef0fa; padding: 2px; }
+  .chains li img { width: 20px; height: 20px; }
   .chains li.c-key { color: var(--lime); border-color: rgba(221, 242, 74, 0.4); }
   .chains li.c-contract { color: var(--amber); border-color: rgba(255, 181, 71, 0.45); }
   .chains li.c-target { outline: 2px solid var(--ink); outline-offset: 1px; }
   .chains li.c-unread { color: #6b7299; border-style: dashed; }
   .foot { color: var(--mute); font-size: 13.5px; margin-top: 16px; }
   .err { border-color: var(--red); }
-  section.reads { margin: 44px 0 0; }
-  section.reads h2 { font: 600 12px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--mute); margin: 0 0 12px; }
-  .chainrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
-  .chainrow li { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; background: #070b2a; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 7px; }
-  .chainrow img { width: 24px; height: 24px; padding: 3px; }
-  img[src$="/mantle.svg"] { background: #000 !important; }  /* the only all-white logo */
+  .reading { display: flex; align-items: center; gap: 12px; color: var(--mute); }
+  .reading .orbit { display: flex; gap: 4px; }
+  .reading .orbit img { width: 20px; height: 20px; animation: hop 1.2s ease-in-out infinite; }
+  .reading .orbit img:nth-child(2) { animation-delay: 0.15s; } .reading .orbit img:nth-child(3) { animation-delay: 0.3s; } .reading .orbit img:nth-child(4) { animation-delay: 0.45s; } .reading .orbit img:nth-child(5) { animation-delay: 0.6s; }
+  @keyframes hop { 0%, 100% { transform: translateY(0); opacity: 0.55; } 40% { transform: translateY(-6px); opacity: 1; } }
+
+  .how { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 24px; margin-top: 40px; align-items: start; scroll-margin-top: 80px; }
+  @media (max-width: 960px) { .how { grid-template-columns: minmax(0, 1fr); } }
+  .flow-card, .result-card, .feat, .states, .reads { padding: 24px; border-radius: 20px; background: var(--glass); border: 1px solid var(--line); }
+  .flow-card h2, .states h2, .reads h2 { margin: 0 0 4px; font-size: 24px; }
+  .flow { list-style: none; margin: 26px 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+  .flow li { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; font-size: 13.5px; color: var(--mute); }
+  .flow b { color: var(--ink); font-size: 15px; margin-top: 6px; }
+  .flow li:not(:last-child)::after { content: ""; position: absolute; top: 30px; left: calc(50% + 38px); width: calc(100% - 64px); border-top: 2px dotted rgba(221, 242, 74, 0.5); }
+  .fi { width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, rgba(221, 242, 74, 0.12), rgba(4, 6, 26, 0.9) 70%); box-shadow: inset 0 0 0 2px var(--c, var(--lime)), 0 0 24px color-mix(in srgb, var(--c, var(--lime)) 45%, transparent); }
+  .fi::before { content: ""; width: 26px; height: 26px; background: var(--c, var(--lime)); -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
+  @media (max-width: 760px) { .flow { grid-template-columns: minmax(0, 1fr); } .flow li { flex-direction: row; text-align: left; align-items: center; } .flow li::after { display: none; } .flow b { margin: 0 6px 0 4px; white-space: nowrap; min-width: 84px; } }
+  .eyebrow { font: 600 12px/1.2 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); margin: 0; }
+  .bad-title { color: var(--red); font-size: 22px; margin: 6px 0 4px; }
+  .result-card .route { margin: 20px 0 14px; }
+  .more-link { background: none; border: 0; padding: 0; color: var(--lime); font: 14px system-ui, sans-serif; cursor: pointer; }
+
+  /* Icons are masks, so one shape takes any colour. */
+  .i-paste { --c: #5ee0f0; --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Crect x='6' y='4' width='12' height='17' rx='2'/%3E%3Cpath d='M9 4V3h6v1M9 10h6M9 14h6' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  .i-read { --c: #8fb4ff; --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 3l9 5-9 5-9-5z'/%3E%3Cpath d='M3 12.5l9 5 9-5M3 16.5l9 5 9-5'/%3E%3C/svg%3E"); }
+  .i-archive { --c: #b48cff; --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='5' rx='1'/%3E%3Cpath d='M5 9v10h14V9M10 13h4' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  .i-verdict { --c: #ffb547; --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linejoin='round'%3E%3Cpath d='M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z'/%3E%3Cpath d='M12 8v5M12 16h.01' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  .i-send { --c: var(--lime); --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M21 3L10 14M21 3l-7 18-4-7-7-4z'/%3E%3C/svg%3E"); }
+  .i-wallet { --m: var(--wallet); }
+  .i-key { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='15' r='4'/%3E%3Cpath d='M11 12l9-9M17 6l3 3M14 9l2 2'/%3E%3C/svg%3E"); }
+
+  .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 24px; scroll-margin-top: 80px; }
+  @media (max-width: 960px) { .features { grid-template-columns: minmax(0, 1fr); } }
+  .feat { position: relative; overflow: hidden; z-index: 0; }
+  .feat::before { content: ""; position: absolute; inset: 0; z-index: -1; background: url(art/net.jpg) center / cover no-repeat; opacity: 0.32; -webkit-mask-image: linear-gradient(110deg, transparent 35%, #000); mask-image: linear-gradient(110deg, transparent 35%, #000); }
+  .feat:nth-child(2)::before { background-position: 30% 70%; } .feat:nth-child(3)::before { background-position: 80% 20%; }
+  .feat h3 { font-size: 21px; margin: 14px 0 8px; }
+  .feat p { color: #c9cde6; font-size: 15px; margin: 0; }
+  .fx { width: 58px; height: 58px; border-radius: 16px; display: grid; place-items: center; background: rgba(4, 6, 26, 0.7); box-shadow: inset 0 0 0 2px var(--c), 0 0 26px color-mix(in srgb, var(--c) 40%, transparent); }
+  .fx::before { content: ""; width: 30px; height: 30px; background: var(--c); -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
+  .fx.k { --c: var(--lime); } .fx.w { --c: var(--amber); } .fx.x { --c: var(--red); }
+  .feat .k-t { color: var(--lime); } .feat .w-t { color: var(--amber); } .feat .x-t { color: var(--red); }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px !important; }
+  .tags span { border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; font-size: 12px; color: var(--ink); background: rgba(4, 6, 26, 0.6); }
+
+  .states, .reads { margin-top: 24px; }
+  .state-grid { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 860px) { .state-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 420px) { .state-grid { grid-template-columns: minmax(0, 1fr); } }
+  .st { display: grid; gap: 4px; padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(4, 6, 26, 0.55); font-size: 13.5px; color: var(--mute); }
+  .st b { font-size: 15px; }
+  .st.ok b { color: var(--lime); } .st.warn b { color: var(--amber); } .st.info b { color: var(--blue); } .st.bad b { color: var(--red); }
+  .st.ok { box-shadow: inset 3px 0 0 var(--lime); } .st.warn { box-shadow: inset 3px 0 0 var(--amber); } .st.info { box-shadow: inset 3px 0 0 var(--blue); } .st.bad { box-shadow: inset 3px 0 0 var(--red); }
+  .chainrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+  .chainrow li { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; background: rgba(4, 6, 26, 0.55); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 7px; transition: border-color 0.2s, transform 0.2s; }
+  .chainrow li:hover { border-color: rgba(221, 242, 74, 0.5); transform: translateY(-2px); }
+  .chainrow img { width: 26px; height: 26px; padding: 3px; }
   .chainrow small { color: var(--amber); font: 11px var(--mono); }
-  section.how { margin: 64px 0 0; }
-  section.how h2 { font-size: 28px; margin: 0 0 18px; }
-  .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-  .grid3 .card h3 { margin: 0 0 8px; font-size: 18px; }
-  .grid3 .card p { margin: 0; color: #d6d8e6; font-size: 15px; }
-  .k { color: var(--lime); } .w { color: var(--amber); } .x { color: var(--red); }
-  footer { margin: 64px 0 40px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--mute); font-size: 13.5px; }
-  @media (max-width: 860px) { .hero, .grid3 { grid-template-columns: 1fr; } nav .links { display: none; } }
-  @media (max-width: 560px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; } .stats div:nth-child(3) { padding-left: 0; border-left: 0; } }
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+  .reveal.in { opacity: 1; transform: none; }
+  footer { margin-top: 48px; font-size: 14px; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rt, .dests img, .addr-node i, .xmark, .banner .count::before, .reading .orbit img { animation: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <nav>
-    <a class="brand" href="#top"><img src="icons/favicon.svg" alt=""><span>Safe to Send?</span></a>
-    <div class="links"><a href="#how">How it works</a><a href="#abstract">Abstract wallets</a><a href="https://cryppit.near.page/">Cryppit</a><a href="https://github.com/cryppit/safe-to-send" target="_blank" rel="noopener noreferrer">GitHub</a></div>
-  </nav>
+<nav class="top" aria-label="Site">
+  <a class="brand" href="#top"><img src="icons/favicon.svg" alt="" width="30" height="30"><span>Safe to Send?</span></a>
+  <span class="top-links"><a href="#how">How it works</a><a href="#why">Why chains differ</a><a href="#abstract">Abstract wallets</a><a href="https://cryppit.near.page/">Cryppit</a></span>
+  <a class="gh" href="https://github.com/cryppit/safe-to-send" target="_blank" rel="noopener noreferrer">GitHub</a>
+</nav>
 
-  <p class="banner" id="abstract"><b>Abstract shuts down on 15 Dec 2026.</b> Moving funds out? Never send to your Abstract wallet address on another chain: on BNB Chain, Ethereum, Base and the rest, nothing can ever reach them. This page keeps a list of every Abstract wallet, so it can warn you even after Abstract is gone.</p>
+<main id="top">
+  <p class="banner" id="abstract"><span class="count" id="countdown">Abstract shuts down 15 Dec</span><span><b>Moving funds out of Abstract?</b> Never send to your Abstract wallet address on another chain: on BNB Chain, Ethereum, Base and the rest, nothing can ever reach them. This page keeps a list of every Abstract wallet, so it can warn you even after Abstract is gone.</span></p>
 
-  <div class="hero" id="top">
-    <div>
+  <section class="hero">
+    <div class="hero-copy">
       <p class="chip"><span>‹/›</span> Open source · MIT · Read-only</p>
       <h1>Safe to <span class="hl">Send?</span></h1>
       <p class="tagline">Check an address before you send.</p>
       <p class="lede">An address that looks like any other can be a smart wallet that only exists on one chain. Send to it on the wrong chain and the money can be gone for good. Paste the address and pick the chain you are sending on: this reads the address on every chain and tells you whether funds sent there can be reached.</p>
+      <p class="ctas"><a class="btn lime-btn" href="#check">Check an address →</a><a class="btn ghost-btn" href="https://github.com/cryppit/safe-to-send" target="_blank" rel="noopener noreferrer">View on GitHub</a></p>
       <dl class="stats">
         <div><dt id="stat-chains">20 chains</dt><dd>read at once</dd></div>
         <div><dt id="stat-agw">Abstract</dt><dd id="stat-agw-dd">wallets archived</dd></div>
@@ -118,48 +253,116 @@
       </dl>
     </div>
 
-    <div class="panel" id="check">
+    <div class="hero-art" aria-hidden="true">
+      <svg class="routes" viewBox="0 0 400 400" preserveAspectRatio="none">
+        <path class="rt ok" d="M88 200 C 170 200, 190 56, 248 56"/>
+        <path class="rt maybe" d="M88 200 C 170 200, 190 128, 248 128"/>
+        <path class="rt lost" d="M88 200 C 170 200, 190 200, 248 200"/>
+        <path class="rt lost" d="M88 200 C 170 200, 190 272, 248 272"/>
+        <path class="rt lost" d="M88 200 C 170 200, 190 344, 248 344"/>
+      </svg>
+      <span class="xmark" style="--x: 44.25%; --y: 50%">✕</span>
+      <span class="xmark" style="--x: 44.25%; --y: 59%">✕</span>
+      <span class="xmark" style="--x: 44.25%; --y: 68%">✕</span>
+      <div class="addr-node"><i></i><span>0xd8b1…2529</span></div>
+      <ul class="dests">
+        <li class="ok" style="--y: 14%"><img src="logos/abstract.svg" alt="" width="40" height="40"><span>Abstract<small>lives here</small></span></li>
+        <li class="maybe" style="--y: 32%"><img src="logos/zksync.svg" alt="" width="40" height="40"><span>ZKsync Era<small>can recover</small></span></li>
+        <li class="lost" style="--y: 50%"><img src="logos/binance-smart-chain.svg" alt="" width="40" height="40"><span>BNB Chain<small>lost</small></span></li>
+        <li class="lost" style="--y: 68%"><img src="logos/ethereum.svg" alt="" width="40" height="40"><span>Ethereum<small>lost</small></span></li>
+        <li class="lost" style="--y: 86%"><img src="logos/base.svg" alt="" width="40" height="40"><span>Base<small>lost</small></span></li>
+      </ul>
+      <div class="float f1"><b>Same address, 20 chains</b><span>it lives on only one</span></div>
+      <div class="float f2 bad"><b>Abstract wallet on BNB</b><span>nobody can ever reach it</span></div>
+    </div>
+
+    <aside class="panel" id="check">
       <h2>Check an address</h2>
       <form id="f">
         <label for="addr">Address you are sending to</label>
         <input id="addr" autocomplete="off" spellcheck="false" placeholder="0x… the recipient address" required>
         <label for="chain">Chain you are sending on</label>
-        <select id="chain" aria-label="Chain"></select>
+        <div class="pick"><img id="chain-logo" class="lg" src="logos/binance-smart-chain.svg" alt=""><select id="chain"></select></div>
         <button class="go" id="go" type="submit">Check address →</button>
       </form>
-      <p class="small">Your browser asks public RPCs directly. No wallet, no keys, nothing signed.</p>
+      <p class="hint">Your browser asks public RPCs directly. No wallet, no keys, nothing signed.</p>
+      <h3>Real addresses</h3>
       <ul class="examples" id="examples">
-        <li><h3>Real addresses</h3></li>
-        <li><button type="button" data-a="0xd8b17dbd34391993ee11b501e6275bbc715e2529" data-c="56"><span>An Abstract wallet, sent on BNB Chain</span><span class="ex-tag">lost</span></button></li>
-        <li><button type="button" data-a="0xd8b17dbd34391993ee11b501e6275bbc715e2529" data-c="324"><span>The same wallet, sent on ZKsync Era</span><span class="ex-tag">owner can recover</span></button></li>
-        <li><button type="button" data-a="0x1d31f4bdc557bca4df3d238f089cecb3b7135fda" data-c="56"><span>A Safe that only exists on Ethereum</span><span class="ex-tag">don't send</span></button></li>
-        <li><button type="button" data-a="0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" data-c="8453"><span>vitalik.eth (EIP-7702), sent on Base</span><span class="ex-tag">safe</span></button></li>
-        <li><button type="button" data-a="0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" data-c="1"><span>The USDC contract itself</span><span class="ex-tag">don't send</span></button></li>
+        <li><button type="button" data-a="0xd8b17dbd34391993ee11b501e6275bbc715e2529" data-c="56"><img class="lg" src="logos/binance-smart-chain.svg" alt="" width="22" height="22"><span>An Abstract wallet, sent on BNB Chain</span><span class="ex-tag t-stop">lost</span></button></li>
+        <li><button type="button" data-a="0xd8b17dbd34391993ee11b501e6275bbc715e2529" data-c="324"><img class="lg" src="logos/zksync.svg" alt="" width="22" height="22"><span>The same wallet, sent on ZKsync Era</span><span class="ex-tag t-caution">owner can recover</span></button></li>
+        <li><button type="button" data-a="0x1d31f4bdc557bca4df3d238f089cecb3b7135fda" data-c="56"><img class="lg" src="logos/binance-smart-chain.svg" alt="" width="22" height="22"><span>A Safe that only exists on Ethereum</span><span class="ex-tag t-stop">don't send</span></button></li>
+        <li><button type="button" data-a="0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" data-c="8453"><img class="lg" src="logos/base.svg" alt="" width="22" height="22"><span>vitalik.eth (EIP-7702), sent on Base</span><span class="ex-tag t-safe">safe</span></button></li>
+        <li><button type="button" data-a="0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" data-c="1"><img class="lg" src="logos/ethereum.svg" alt="" width="22" height="22"><span>The USDC contract itself</span><span class="ex-tag t-stop">don't send</span></button></li>
       </ul>
-    </div>
-  </div>
+    </aside>
+  </section>
 
   <div id="out" aria-live="polite"></div>
 
-  <section class="reads" aria-labelledby="reads-h">
-    <h2 id="reads-h">Reads every one of these chains at once</h2>
-    <ul class="chainrow" id="chainrow"></ul>
-  </section>
-
-  <section class="how" id="how">
-    <h2>Why one address can be safe on one chain and lost on another</h2>
-    <div class="grid3">
-      <div class="card"><h3 class="k">Key wallets work everywhere</h3><p>A normal wallet address comes from a private key. The same key controls that address on every EVM chain, so funds sent on the "wrong" EVM chain can still be reached by importing the key there. EIP-7702 accounts are key wallets too.</p></div>
-      <div class="card"><h3 class="w">Smart wallets live on one chain</h3><p>Safes, Abstract wallets and other smart wallets are contracts. They exist only on the chains where they were created. On any other chain the same address has no code and no key behind it. Some can be created there later at the same address; some never can.</p></div>
-      <div class="card"><h3 class="x">Abstract wallets can't follow you</h3><p>Abstract runs EraVM, which computes contract addresses differently from standard EVM chains. An Abstract wallet can never be recreated on BNB Chain, Ethereum or Base. ZKsync Era also runs EraVM and has Abstract's wallet contracts, so there its owner can most likely recreate it.</p></div>
+  <section class="how reveal" id="how">
+    <div class="flow-card">
+      <h2>How a check works</h2>
+      <p class="muted">From the address you paste to a clear answer, read from public RPCs only.</p>
+      <ol class="flow">
+        <li><span class="fi i-paste" aria-hidden="true"></span><b>1. Paste</b><span>the address and the chain you are sending on</span></li>
+        <li><span class="fi i-read" aria-hidden="true"></span><b>2. Read</b><span>the address on all 20 chains at once</span></li>
+        <li><span class="fi i-archive" aria-hidden="true"></span><b>3. Look up</b><span>the Abstract wallet list, Safe owners and EIP-7702 code</span></li>
+        <li><span class="fi i-verdict" aria-hidden="true"></span><b>4. Decide</b><span>safe, caution or stop, with the reasons</span></li>
+        <li><span class="fi i-send" aria-hidden="true"></span><b>5. Send</b><span>or don't: before the money moves</span></li>
+      </ol>
+    </div>
+    <div class="result-card">
+      <p class="eyebrow">A real result</p>
+      <h3 class="bad-title">Stop</h3>
+      <p class="muted">An Abstract wallet, sent on BNB Chain. Nothing lives at that address on BNB Chain and nothing ever can.</p>
+      <div id="example"></div>
+      <button type="button" class="more-link" data-a="0xd8b17dbd34391993ee11b501e6275bbc715e2529" data-c="56">Open the full check →</button>
     </div>
   </section>
 
+  <section class="features" id="why">
+    <article class="feat reveal">
+      <span class="fx k i-key" aria-hidden="true"></span>
+      <h3 class="k-t">Key wallets work everywhere</h3>
+      <p>A normal wallet address comes from a private key. The same key controls that address on every EVM chain, so funds sent on the "wrong" EVM chain can still be reached by importing the key there. EIP-7702 accounts are key wallets too.</p>
+      <p class="tags"><span>Key wallets</span><span>EIP-7702</span><span>Safe</span></p>
+    </article>
+    <article class="feat reveal">
+      <span class="fx w i-wallet" aria-hidden="true"></span>
+      <h3 class="w-t">Smart wallets live on one chain</h3>
+      <p>Safes, Abstract wallets and other smart wallets are contracts. They exist only on the chains where they were created. On any other chain the same address has no code and no key behind it. Some can be created there later at the same address; some never can.</p>
+      <p class="tags"><span>Safes</span><span>Smart accounts</span><span>Caution</span></p>
+    </article>
+    <article class="feat reveal">
+      <span class="fx x i-verdict" aria-hidden="true"></span>
+      <h3 class="x-t">Abstract wallets can't follow you</h3>
+      <p>Abstract runs EraVM, which computes contract addresses differently from standard EVM chains. An Abstract wallet can never be recreated on BNB Chain, Ethereum or Base. ZKsync Era also runs EraVM and has Abstract's wallet contracts, so there its owner can most likely recreate it.</p>
+      <p class="tags"><span id="tag-agw">Every Abstract wallet</span><span>Kept after 15 Dec</span><span>Stop</span></p>
+    </article>
+  </section>
+
+  <section class="states reveal">
+    <h2>What it tells apart</h2>
+    <p class="muted">Every check ends in one of these, from what the chains themselves say.</p>
+    <ul class="state-grid">
+      <li class="st ok"><b>Safe</b><span>A key wallet, an EIP-7702 account, or a Safe that lives on this chain.</span></li>
+      <li class="st warn"><b>Caution</b><span>A contract here, or a wallet only its owner can still set up on this chain.</span></li>
+      <li class="st bad"><b>Stop</b><span>Nothing can reach funds sent here: a wallet from another chain, or a token contract.</span></li>
+      <li class="st info"><b>Can't tell</b><span>Never used on any chain checked, or a chain's RPCs did not answer.</span></li>
+    </ul>
+  </section>
+
+  <section class="reads reveal" aria-labelledby="reads-h">
+    <h2 id="reads-h">Reads every one of these chains at once</h2>
+    <p class="muted">Public RPCs only, straight from your browser. No keys, no server.</p>
+    <ul class="chainrow" id="chainrow"></ul>
+  </section>
+
   <footer>
-    <p>Safe to Send? is a <a href="https://cryppit.near.page/">Cryppit</a> tool: keyless, read-only, open source (MIT). It reads public RPCs and a list of Abstract wallets kept in this site; it never holds keys, connects a wallet or signs anything. A "safe" answer is about whether funds can be reached, not about who the address belongs to: check that yourself.</p>
-    <p>Independent project, not affiliated with Abstract, Safe, or any chain listed. <span id="archive-line"></span></p>
+    <p>Open source (MIT): <a href="https://github.com/cryppit/safe-to-send" target="_blank" rel="noopener noreferrer">github.com/cryppit/safe-to-send</a> · by <a href="https://cryppit.near.page/">Cryppit</a></p>
+    <p class="muted">Keyless and read-only: it reads public RPCs and a list of Abstract wallets kept in this site; it never holds keys, connects a wallet or signs anything. A "safe" answer is about whether funds can be reached, not about who the address belongs to: check that yourself. Independent project, not affiliated with Abstract, Safe, or any chain listed. Chain logos: web3icons (MIT). <span id="archive-line"></span></p>
   </footer>
-</div>
+</main>
 
 <script type="module">
   import { check } from "./src/check.js";
@@ -167,16 +370,26 @@
 
   const $ = (id) => document.getElementById(id);
   const el = (tag, attrs = {}, text) => { const e = document.createElement(tag); Object.assign(e, attrs); if (text != null) e.textContent = text; return e; };
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const logo = (id, size = 18) => { const c = chainById(id); return c?.logo ? el("img", { className: "lg", src: `logos/${c.logo}.svg`, alt: "", width: size, height: size }) : null; };
 
   const select = $("chain");
   for (const c of CHAINS) select.append(el("option", { value: String(c.id) }, c.name));
   select.value = "56";
+  const syncLogo = () => { const c = chainById(Number(select.value)); if (c?.logo) $("chain-logo").src = `logos/${c.logo}.svg`; };
+  select.addEventListener("change", syncLogo);
   $("stat-chains").textContent = `${CHAINS.length} chains`;
-  const logo = (id) => { const c = chainById(id); return c?.logo ? el("img", { src: `logos/${c.logo}.svg`, alt: "", width: 18, height: 18 }) : null; };
   for (const c of CHAINS) {
-    const li = el("li"); li.append(logo(c.id), c.name);
+    const li = el("li"); li.append(logo(c.id, 26), c.name);
     if (c.until) li.append(el("small", {}, `until ${new Date(c.until + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}`));
     $("chainrow").append(li);
+  }
+
+  // Days left before Abstract shuts down (UTC); after that the banner says it is gone and the archive answers alone.
+  const abs = chainById(2741);
+  if (abs?.until) {
+    const days = Math.ceil((Date.parse(abs.until + "T00:00:00Z") - Date.now()) / 86400000);
+    $("countdown").textContent = days > 1 ? `Abstract shuts down in ${days} days` : days === 1 ? "Abstract shuts down tomorrow" : "Abstract has shut down";
   }
 
   // The archive: one small file per first byte of the address, fetched only when needed.
@@ -186,8 +399,9 @@
   };
   fetch("data/abstract/manifest.json").then((r) => (r.ok ? r.json() : null)).then((m) => {
     if (!m) return;
-    $("stat-agw").textContent = `${(m.wallets / 1e6).toFixed(1)}M`;
+    $("stat-agw").textContent = `${(m.wallets / 1e6).toFixed(2)}M`;
     $("stat-agw-dd").textContent = "Abstract wallets archived";
+    $("tag-agw").textContent = `${(m.wallets / 1e6).toFixed(2)}M Abstract wallets`;
     $("archive-line").textContent = `Abstract wallet archive: ${m.wallets.toLocaleString("en-US")} wallets up to Abstract block ${m.toBlock} (${m.toBlockTime.slice(0, 10)}).`;
   }).catch(() => {});
 
@@ -196,10 +410,57 @@
     const k = c.code == null ? "unread" : c.code === "0x" ? (c.nonce > 0 ? "key" : "none") : /^0xef0100/i.test(c.code) ? "key" : "contract";
     const what = { unread: "no answer", key: c.code === "0x" ? `key wallet, ${c.nonce} tx` : "EIP-7702", none: "unused", contract: c.safe ? `Safe ${c.safe.threshold}-of-${c.safe.owners}` : c.token ? `${c.token.symbol} token` : "contract" }[k];
     const li = el("li", { className: `c-${k}${id === target ? " c-target" : ""}`, title: id === target ? "the chain you are sending on" : "" });
-    const img = logo(id); if (img) li.append(img);
+    const img = logo(id, 20); if (img) li.append(img);
     li.append(`${chainName(id)}: ${what}`);
     return li;
   };
+
+  // The route, left to right: what the address is, where it lives, and what happens on the chain you picked.
+  const KIND = { "abstract-wallet": "Abstract wallet", eip7702: "EIP-7702 account", "key-wallet": "Key wallet", "safe-here": "Safe multisig", "safe-elsewhere": "Safe multisig",
+    "token-contract": "Token contract", "contract-here": "Contract", "contract-elsewhere": "Contract", unused: "Never used", unreadable: "Not read" };
+  const END = { safe: ["s-ok", "✓", "Reachable"], caution: ["s-maybe", "!", "Careful"], stop: ["s-lost", "✕", "Lost"], unknown: ["s-unknown", "?", "Can't tell"] };
+  function route(v, f) {
+    const short = `${f.address.slice(0, 6)}…${f.address.slice(-4)}`;
+    const keyed = v.kind === "key-wallet" || v.kind === "eip7702";
+    const homes = v.kind === "abstract-wallet" ? [2741] : Object.entries(f.chains).filter(([, c]) => c.code && c.code !== "0x" && !/^0xef0100/i.test(c.code)).map(([id]) => Number(id));
+    const ol = el("ol", { className: "route" });
+    const node = (cls, dotKids, title, sub, badge, bar) => {
+      const li = el("li", { className: `stop-n ${cls}` });
+      const dot = el("span", { className: "dot" }); dot.setAttribute("aria-hidden", "true"); dot.append(...dotKids);
+      if (badge) dot.append(el("span", { className: "badge" }, badge));
+      li.append(dot, el("b", {}, title), el("small", {}, sub));
+      if (bar) li.append(bar);
+      ol.append(li);
+    };
+    const ico = (name) => el("span", { className: `ico i-${name}` });
+    const bar = (broken) => el("span", { className: `bar${broken ? " broken" : ""}` });
+    const [endCls, endMark, endWord] = END[v.level];
+    const broken = v.level === "stop";
+    const first = bar(false); first.style.setProperty("--c2", "var(--blue)");
+    node("s-plain", [ico(keyed ? "key" : "wallet")], short, KIND[v.kind] ?? "Address", null, first);
+    if (keyed) node("s-ok", [ico("key")], "One key", "works on every chain", "✓", bar(broken));
+    else if (homes.length) node("s-ok", [logo(homes[0], 30)], `Lives on ${chainName(homes[0])}${homes.length > 1 ? ` +${homes.length - 1}` : ""}`, homes.includes(f.target) ? "and here" : "only there", "✓", bar(broken));
+    else node("s-unknown", [ico("wallet")], "Lives nowhere yet", "no code, no history", "?", bar(true));
+    node(endCls, [logo(f.target, 30)], `Sent on ${chainName(f.target)}`, endWord, endMark);
+    ol.setAttribute("aria-label", `${KIND[v.kind] ?? "Address"}; sent on ${chainName(f.target)}: ${endWord}`);
+    return ol;
+  }
+
+  function play(ol, level) {
+    if (still || typeof ol.animate !== "function") return;
+    let t = 0;
+    for (const li of ol.children) {
+      const dot = li.querySelector(".dot"), bar = li.querySelector(".bar");
+      dot.animate([{ opacity: 0.15, transform: "scale(0.6)" }, { opacity: 1, transform: "scale(1.15)", offset: 0.6 }, { opacity: 1, transform: "scale(1)" }], { duration: 380, delay: t, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "backwards" });
+      for (const x of li.querySelectorAll("b, small")) x.animate([{ opacity: 0.15 }, { opacity: 1 }], { duration: 300, delay: t + 80, fill: "backwards" });
+      if (bar) bar.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 360, delay: t + 220, easing: "ease-in-out", fill: "backwards" });
+      t += 460;
+    }
+    const end = ol.lastElementChild.querySelector(".dot");
+    if (level === "stop") end.animate([{ transform: "translateX(0)" }, { transform: "translateX(-5px)" }, { transform: "translateX(5px)" }, { transform: "translateX(-3px)" }, { transform: "translateX(0)" }], { duration: 420, delay: t });
+    const ring = { stop: "255,107,107", safe: "221,242,74", caution: "255,181,71", unknown: "143,180,255" }[level];
+    end.animate([{ boxShadow: `0 0 0 0 rgba(${ring},0.65)` }, { boxShadow: `0 0 0 16px rgba(${ring},0)` }], { duration: 900, delay: t, iterations: 3, easing: "ease-out" });
+  }
 
   function render(r) {
     const out = $("out");
@@ -209,36 +470,62 @@
     const card = el("article", { className: `card ${v.level}` });
     const head = el("header");
     head.append(el("span", { className: `pill l-${v.level}` }, LABEL[v.level]), el("span", { className: "addr" }, `${f.address} on ${chainName(f.target)}`));
-    card.append(head, el("p", { className: "title" }, v.title));
+    const steps = route(v, f);
+    card.append(head, steps, el("p", { className: "title" }, v.title));
     const ul = el("ul", { className: "reasons" });
     for (const reason of v.reasons) ul.append(el("li", {}, reason));
     card.append(ul);
     const seen = Object.entries(f.chains).map(([id, c]) => [Number(id), c]).filter(([id, c]) => id === f.target || c.code == null || c.code !== "0x" || c.nonce > 0);
-    card.append(el("p", { className: "small" }, "What each chain says about this address (only chains where it was seen, plus the one you picked):"));
+    card.append(el("p", { className: "hint" }, "What each chain says about this address (only chains where it was seen, plus the one you picked):"));
     const chains = el("ul", { className: "chains" });
     for (const [id, c] of seen) chains.append(chip(id, c, f.target));
     card.append(chains);
     if (f.abstractWallet) card.append(el("p", { className: "foot" }, f.abstractSource === "archive" ? "Found in the archive of Abstract wallets." : "Confirmed by Abstract's wallet registry."));
     card.append(el("p", { className: "foot" }, `Read from public RPCs on ${Object.keys(f.chains).length} chains, at the latest block. Nothing was signed.`));
     out.append(card);
-    out.scrollIntoView({ behavior: "smooth", block: "start" });
+    play(steps, v.level);
+    if (!still) for (const [i, li] of [...chains.children].entries()) li.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 300, delay: 1400 + i * 70, fill: "backwards" });
+  }
+
+  function reading() {
+    const p = el("div", { className: "card reading" });
+    const orbit = el("span", { className: "orbit" });
+    for (const id of [1, 56, 8453, 42161, 2741]) orbit.append(logo(id, 20));
+    p.append(orbit, `Reading ${CHAINS.length} chains…`);
+    $("out").replaceChildren(p);
   }
 
   async function run(address, chainId) {
     const go = $("go");
-    go.disabled = true; go.textContent = "Reading 20 chains…";
+    go.disabled = true; go.textContent = `Reading ${CHAINS.length} chains…`;
+    reading();
+    $("out").scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
     try { render(await check(address.trim(), Number(chainId), { loadShard })); }
     catch (e) { render({ error: "failed", message: `Something went wrong: ${e.message}` }); }
     finally { go.disabled = false; go.textContent = "Check address →"; }
   }
 
   $("f").addEventListener("submit", (e) => { e.preventDefault(); run($("addr").value, select.value); });
-  for (const b of document.querySelectorAll("#examples button")) {
-    b.addEventListener("click", () => { $("addr").value = b.dataset.a; select.value = b.dataset.c; run(b.dataset.a, b.dataset.c); });
+  for (const b of document.querySelectorAll("button[data-a]")) {
+    b.addEventListener("click", () => { $("addr").value = b.dataset.a; select.value = b.dataset.c; syncLogo(); run(b.dataset.a, b.dataset.c); });
   }
+
+  // The real result beside "How a check works": the Abstract wallet sent on BNB Chain, played when it comes into view.
+  const example = route({ level: "stop", kind: "abstract-wallet" }, { address: "0xd8b17dbd34391993ee11b501e6275bbc715e2529", target: 56, chains: {} });
+  $("example").append(example);
+  new IntersectionObserver((entries, observer) => {
+    if (!entries.some((e) => e.isIntersecting)) return;
+    observer.disconnect();
+    play(example, "stop");
+  }, { threshold: 0.5 }).observe(example);
+
+  // Sections rise in as they come into view.
+  const io = new IntersectionObserver((entries) => { for (const e of entries) if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }, { threshold: 0.12 });
+  for (const s of document.querySelectorAll(".reveal")) io.observe(s);
+
   // A link can carry the check: ?address=0x…&chain=56
   const q = new URLSearchParams(location.search);
-  if (q.get("address")) { $("addr").value = q.get("address"); if (q.get("chain")) select.value = q.get("chain"); run($("addr").value, select.value); }
+  if (q.get("address")) { $("addr").value = q.get("address"); if (q.get("chain")) select.value = q.get("chain"); syncLogo(); run($("addr").value, select.value); }
 </script>
 </body>
 </html>
