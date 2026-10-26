@@ -8,6 +8,15 @@
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Safe to Send? Check an address before you send">
+<meta property="og:description" content="Paste an address and pick the chain: see whether funds sent there can be reached. Catches Abstract wallets, Safes and other smart wallets that only exist on one chain. Free, read-only, by Cryppit.">
+<meta property="og:url" content="https://cryppit.github.io/safe-to-send/">
+<meta property="og:image" content="https://cryppit.github.io/safe-to-send/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#04061a">
 <style>
   :root {
     --bg: #070b22; --deep: #04061a; --panel: #0c1236; --line: rgba(154, 163, 199, 0.2);
@@ -60,13 +69,21 @@
   .reasons { margin: 0 0 16px; padding-left: 20px; } .reasons li { margin: 6px 0; }
   .addr { font: 13.5px var(--mono); color: var(--mute); overflow-wrap: anywhere; }
   .chains { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
-  .chains li { font: 12.5px var(--mono); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; color: var(--mute); }
+  .chains li { display: inline-flex; align-items: center; gap: 6px; font: 12.5px var(--mono); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px 4px 5px; color: var(--mute); }
+  .chains li img, .chainrow img { width: 20px; height: 20px; border-radius: 50%; flex: none; background: #eef0fa; padding: 2px; }
   .chains li.c-key { color: var(--lime); border-color: rgba(221, 242, 74, 0.4); }
   .chains li.c-contract { color: var(--amber); border-color: rgba(255, 181, 71, 0.45); }
   .chains li.c-target { outline: 2px solid var(--ink); outline-offset: 1px; }
   .chains li.c-unread { color: #6b7299; border-style: dashed; }
   .foot { color: var(--mute); font-size: 13.5px; margin-top: 16px; }
   .err { border-color: var(--red); }
+  section.reads { margin: 44px 0 0; }
+  section.reads h2 { font: 600 12px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--mute); margin: 0 0 12px; }
+  .chainrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .chainrow li { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; background: #070b2a; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 7px; }
+  .chainrow img { width: 24px; height: 24px; padding: 3px; }
+  img[src$="/mantle.svg"] { background: #000 !important; }  /* the only all-white logo */
+  .chainrow small { color: var(--amber); font: 11px var(--mono); }
   section.how { margin: 64px 0 0; }
   section.how h2 { font-size: 28px; margin: 0 0 18px; }
   .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
@@ -82,7 +99,7 @@
 <div class="wrap">
   <nav>
     <a class="brand" href="#top"><img src="icons/favicon.svg" alt=""><span>Safe to Send?</span></a>
-    <div class="links"><a href="#how">How it works</a><a href="#abstract">Abstract wallets</a><a href="https://cryppit.github.io/wheres-my-withdrawal/">Cryppit</a><a href="https://github.com/cryppit/safe-to-send" target="_blank" rel="noopener noreferrer">GitHub</a></div>
+    <div class="links"><a href="#how">How it works</a><a href="#abstract">Abstract wallets</a><a href="https://cryppit.near.page/">Cryppit</a><a href="https://github.com/cryppit/safe-to-send" target="_blank" rel="noopener noreferrer">GitHub</a></div>
   </nav>
 
   <p class="banner" id="abstract"><b>Abstract shuts down on 15 Dec 2026.</b> Moving funds out? Never send to your Abstract wallet address on another chain: on BNB Chain, Ethereum, Base and the rest, nothing can ever reach them. This page keeps a list of every Abstract wallet, so it can warn you even after Abstract is gone.</p>
@@ -124,6 +141,11 @@
 
   <div id="out" aria-live="polite"></div>
 
+  <section class="reads" aria-labelledby="reads-h">
+    <h2 id="reads-h">Reads every one of these chains at once</h2>
+    <ul class="chainrow" id="chainrow"></ul>
+  </section>
+
   <section class="how" id="how">
     <h2>Why one address can be safe on one chain and lost on another</h2>
     <div class="grid3">
@@ -134,14 +156,14 @@
   </section>
 
   <footer>
-    <p>Safe to Send? is a <a href="https://github.com/cryppit">Cryppit</a> tool: keyless, read-only, open source (MIT). It reads public RPCs and a list of Abstract wallets kept in this site; it never holds keys, connects a wallet or signs anything. A "safe" answer is about whether funds can be reached, not about who the address belongs to: check that yourself.</p>
+    <p>Safe to Send? is a <a href="https://cryppit.near.page/">Cryppit</a> tool: keyless, read-only, open source (MIT). It reads public RPCs and a list of Abstract wallets kept in this site; it never holds keys, connects a wallet or signs anything. A "safe" answer is about whether funds can be reached, not about who the address belongs to: check that yourself.</p>
     <p>Independent project, not affiliated with Abstract, Safe, or any chain listed. <span id="archive-line"></span></p>
   </footer>
 </div>
 
 <script type="module">
   import { check } from "./src/check.js";
-  import { CHAINS, chainName } from "./src/chains.js";
+  import { CHAINS, chainName, chainById } from "./src/chains.js";
 
   const $ = (id) => document.getElementById(id);
   const el = (tag, attrs = {}, text) => { const e = document.createElement(tag); Object.assign(e, attrs); if (text != null) e.textContent = text; return e; };
@@ -150,6 +172,12 @@
   for (const c of CHAINS) select.append(el("option", { value: String(c.id) }, c.name));
   select.value = "56";
   $("stat-chains").textContent = `${CHAINS.length} chains`;
+  const logo = (id) => { const c = chainById(id); return c?.logo ? el("img", { src: `logos/${c.logo}.svg`, alt: "", width: 18, height: 18 }) : null; };
+  for (const c of CHAINS) {
+    const li = el("li"); li.append(logo(c.id), c.name);
+    if (c.until) li.append(el("small", {}, `until ${new Date(c.until + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}`));
+    $("chainrow").append(li);
+  }
 
   // The archive: one small file per first byte of the address, fetched only when needed.
   const loadShard = async (key) => {
@@ -167,7 +195,10 @@
   const chip = (id, c, target) => {
     const k = c.code == null ? "unread" : c.code === "0x" ? (c.nonce > 0 ? "key" : "none") : /^0xef0100/i.test(c.code) ? "key" : "contract";
     const what = { unread: "no answer", key: c.code === "0x" ? `key wallet, ${c.nonce} tx` : "EIP-7702", none: "unused", contract: c.safe ? `Safe ${c.safe.threshold}-of-${c.safe.owners}` : c.token ? `${c.token.symbol} token` : "contract" }[k];
-    return el("li", { className: `c-${k}${id === target ? " c-target" : ""}`, title: id === target ? "the chain you are sending on" : "" }, `${chainName(id)}: ${what}`);
+    const li = el("li", { className: `c-${k}${id === target ? " c-target" : ""}`, title: id === target ? "the chain you are sending on" : "" });
+    const img = logo(id); if (img) li.append(img);
+    li.append(`${chainName(id)}: ${what}`);
+    return li;
   };
 
   function render(r) {

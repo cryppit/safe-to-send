@@ -91,4 +91,5 @@ limited and offered as is.
 
 ## Licence
 
-MIT. A [Cryppit](https://github.com/cryppit) tool.
+MIT. A [Cryppit](https://cryppit.near.page/) tool. The chain logos in `logos/` are from
+[web3icons](https://github.com/0xa3k5/web3icons) (MIT), unmodified; see `logos/LICENSE`.
