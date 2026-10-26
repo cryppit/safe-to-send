@@ -1,0 +1,45 @@
+{
+ "at": "2026-10-26T12:16:25.015Z",
+ "sample": 50000,
+ "seed": 20261026,
+ "total": 4251573,
+ "prices": {
+  "eth": 2327.3,
+  "bnb": 741.22,
+  "avax": 8.95
+ },
+ "perChain": {
+  "Ethereum": {
+   "wallets": 91,
+   "usd": 2297.6142847836427
+  },
+  "BNB Chain": {
+   "wallets": 4,
+   "usd": 23.28384053466148
+  },
+  "Base": {
+   "wallets": 38,
+   "usd": 2755.5190170502724
+  },
+  "Arbitrum One": {
+   "wallets": 19,
+   "usd": 1746.4767954049173
+  },
+  "OP Mainnet": {
+   "wallets": 6,
+   "usd": 133.83588109091124
+  },
+  "Avalanche": {
+   "wallets": 0,
+   "usd": 0
+  }
+ },
+ "holders": 148,
+ "usd": 6957,
+ "scaledWallets": 12585,
+ "scaledUsd": 591541,
+ "interval": [
+  10716,
+  14778
+ ]
+}
