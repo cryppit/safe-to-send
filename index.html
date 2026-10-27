@@ -158,7 +158,13 @@
   .chains li.c-unread { color: #6b7299; border-style: dashed; }
   .foot { color: var(--mute); font-size: 13.5px; margin-top: 16px; }
   .err { border-color: var(--red); }
-  .reading { display: flex; align-items: center; gap: 12px; color: var(--mute); }
+  /* While the chains are read: the card pops in and glows, a light sweeps along it, the chain logos hop in turn. */
+  .reading { position: relative; display: flex; align-items: center; gap: 14px; overflow: hidden; color: var(--mute); border-color: rgba(221, 242, 74, 0.5); background: linear-gradient(90deg, rgba(221, 242, 74, 0.05), rgba(221, 242, 74, 0.12), rgba(221, 242, 74, 0.05)), var(--panel); box-shadow: 0 0 0 4px rgba(221, 242, 74, 0.06), 0 0 34px rgba(221, 242, 74, 0.28); animation: ld-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .reading b { display: block; color: var(--lime); font-size: 17px; text-shadow: 0 0 18px rgba(221, 242, 74, 0.45); }
+  .reading .ld-detail { display: block; margin-top: 2px; font-size: 14px; }
+  .reading .ld-bar { position: absolute; left: 0; bottom: 0; width: 40%; height: 2px; background: linear-gradient(90deg, transparent, var(--lime), transparent); animation: ld-sweep 1.4s ease-in-out infinite; }
+  @keyframes ld-pop { from { opacity: 0; transform: translateY(6px) scale(0.97); } to { opacity: 1; transform: none; } }
+  @keyframes ld-sweep { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
   .reading .orbit { display: flex; gap: 4px; }
   .reading .orbit img { width: 20px; height: 20px; animation: hop 1.2s ease-in-out infinite; }
   .reading .orbit img:nth-child(2) { animation-delay: 0.15s; } .reading .orbit img:nth-child(3) { animation-delay: 0.3s; } .reading .orbit img:nth-child(4) { animation-delay: 0.45s; } .reading .orbit img:nth-child(5) { animation-delay: 0.6s; }
@@ -224,7 +230,7 @@
   footer { margin-top: 48px; font-size: 14px; }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .rt, .dests img, .addr-node i, .xmark, .banner .count::before, .reading .orbit img { animation: none; }
+    .rt, .dests img, .addr-node i, .xmark, .banner .count::before, .reading .orbit img, .reading, .reading .ld-bar { animation: none; }
     .reveal { opacity: 1; transform: none; transition: none; }
   }
 </style>
@@ -492,7 +498,12 @@
     const p = el("div", { className: "card reading" });
     const orbit = el("span", { className: "orbit" });
     for (const id of [1, 56, 8453, 42161, 2741]) orbit.append(logo(id, 20));
-    p.append(orbit, `Reading ${CHAINS.length} chains…`);
+    const text = el("div");
+    text.append(el("b", {}, "Reading the chain…"), el("span", { className: "ld-detail" }, `The address on ${CHAINS.length} chains: is it a contract, a wallet with its own key, or nothing yet.`));
+    const bar = el("span", { className: "ld-bar" });
+    bar.setAttribute("aria-hidden", "true");
+    p.setAttribute("role", "status");
+    p.append(orbit, text, bar);
     $("out").replaceChildren(p);
   }
 
