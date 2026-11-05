@@ -15,8 +15,9 @@ A `0x…` address looks the same on every EVM chain, but it does not always mean
   chains where it was created. On any other chain the same address has no code and no key behind it.
 
 Send to a smart wallet on a chain where it does not exist and nobody may ever reach the funds. In October 2026 a user
-lost about $20,000 of USDC this way: they pasted their Abstract Global Wallet address while sending on BNB Chain.
-Wallets and exchanges accept the address because it is valid; on the chain it was sent on, it looks like an unused
+reported losing about $20,000 of USDC this way, after pasting their Abstract Global Wallet address while sending on BNB
+Chain. The report is their own post. On chain, the matching address holds 19,998 Binance-Peg USDC on BNB Chain, with no
+code behind it and no outgoing transactions (checked 5 Nov 2026). Wallets and exchanges accept the address because it is valid; on the chain it was sent on, it looks like an unused
 account. Abstract shuts down on **15 Dec 2026**, so its users are moving funds now.
 
 What existed on 26 Oct 2026 (notes in Cryppit's research repo): Rabby warns about contracts on other chains from its
