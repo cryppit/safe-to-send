@@ -13,14 +13,14 @@ const SELECTOR = {
   isAGW: "0x932bdb47", // Abstract's AGW registry
 };
 
-export const clientsFor = (chain) => makeRpc(chain.rpcs, { timeoutMs: 10_000 });
+export const clientsFor = (chain) => makeRpc(chain.rpcs, { timeoutMs: 6_000 });
 
 const wordAt = (hex, i) => hex.slice(2 + i * 64, 2 + (i + 1) * 64);
 const hasWords = (r, n) => typeof r === "string" && r.length >= 2 + 64 * n;
 const uint = (hex, i) => BigInt("0x" + wordAt(hex, i));
 
 /** An eth_call answer, or null when it reverted (an EOA or a contract without the function answers "0x"). */
-async function view(rpc, to, data) {
+export async function view(rpc, to, data) {
   const r = await rpc("eth_call", [{ to, data }, "latest"]);
   return r && !r.reverted && r !== "0x" ? r : null;
 }
@@ -48,7 +48,10 @@ async function readChain(address, rpc, isTarget) {
     const [threshold, owners] = await Promise.all([view(rpc, address, SELECTOR.getThreshold), view(rpc, address, SELECTOR.getOwners)]);
     if (hasWords(threshold, 1) && hasWords(owners, 2)) {
       const t = Number(uint(threshold, 0)), n = Number(uint(owners, 1));
-      if (t > 0 && n >= t && n < 1000) out.safe = { threshold: t, owners: n };
+      if (t > 0 && n >= t && n < 1000 && hasWords(owners, 2 + n)) {
+        const signers = Array.from({ length: n }, (_, i) => "0x" + wordAt(owners, 2 + i).slice(24));
+        out.safe = { threshold: t, owners: n, signers };
+      }
     }
     if (isTarget && !out.safe) {
       const [symbol, decimals] = await Promise.all([view(rpc, address, SELECTOR.symbol), view(rpc, address, SELECTOR.decimals)]);

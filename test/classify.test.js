@@ -120,3 +120,27 @@ test("chains that could not be read are listed, and a key wallet verdict still h
   assert.equal(v.level, "safe");
   assert.deepEqual(v.unread, [324]);
 });
+
+// The same Safe address can have different owners on different chains: that is how Wintermute lost 20M OP.
+const O1 = "0x" + "aa".repeat(20), O2 = "0x" + "bb".repeat(20), O3 = "0x" + "cc".repeat(20);
+const safeOn = (threshold, signers) => ({ code: "0x6080", nonce: 1, safe: { threshold, owners: signers.length, signers } });
+
+test("a Safe whose owners differ on another chain: caution, naming both", () => {
+  const v = classify({ address: A, target: 56, abstractWallet: false, chains: { 56: safeOn(1, [O3]), 1: safeOn(2, [O1, O2]) } });
+  assert.equal(v.level, "caution");
+  assert.equal(v.kind, "safe-differs");
+  assert.match(v.title, /different owners/);
+  assert.match(v.reasons.join(" "), /1-of-1 Safe on BNB Chain/);
+  assert.match(v.reasons.join(" "), /2-of-2 Safe on Ethereum/);
+});
+
+test("a Safe with the same owners on every chain stays safe, whatever order they are listed in", () => {
+  const v = classify({ address: A, target: 56, abstractWallet: false, chains: { 56: safeOn(2, [O1, O2]), 1: safeOn(2, [O2, O1]) } });
+  assert.equal(v.level, "safe");
+  assert.equal(v.kind, "safe-here");
+});
+
+test("the same owners with a different threshold count as different", () => {
+  const v = classify({ address: A, target: 56, abstractWallet: false, chains: { 56: safeOn(1, [O1, O2]), 1: safeOn(2, [O1, O2]) } });
+  assert.equal(v.kind, "safe-differs");
+});

@@ -2,15 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- The page may talk only to itself and these public RPCs. test/privacy.test.js keeps this list equal to src/chains.js. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://horizon.stellar.org https://xrpl.ws https://xrplcluster.com https://andromeda.metis.io https://api.avax.network https://api.mainnet.abs.xyz https://arb1.arbitrum.io https://arbitrum-one-rpc.publicnode.com https://avalanche-c-chain-rpc.publicnode.com https://base-rpc.publicnode.com https://berachain-rpc.publicnode.com https://blast-rpc.publicnode.com https://bsc-dataseed.bnbchain.org https://bsc-rpc.publicnode.com https://celo-rpc.publicnode.com https://cronos-evm-rpc.publicnode.com https://ethereum-rpc.publicnode.com https://evm-rpc.sei-apis.com https://evm.cronos.org https://forno.celo.org https://gnosis-rpc.publicnode.com https://ink-rpc.publicnode.com https://linea-rpc.publicnode.com https://mainnet.base.org https://mainnet.era.zksync.io https://mainnet.mode.network https://mainnet.optimism.io https://mainnet.unichain.org https://mantle-rpc.publicnode.com https://metis-rpc.publicnode.com https://optimism-rpc.publicnode.com https://polygon-bor-rpc.publicnode.com https://polygon.gateway.tenderly.co https://rpc-gel.inkonchain.com https://rpc.api.lisk.com https://rpc.berachain.com https://rpc.blast.io https://rpc.gnosischain.com https://rpc.hyperliquid.xyz https://rpc.katana.network https://rpc.linea.build https://rpc.mainnet.chain.robinhood.com https://rpc.mainnet.taiko.xyz https://rpc.mantle.xyz https://rpc.mevblocker.io https://rpc.monad.xyz https://rpc.plasma.to https://rpc.scroll.io https://rpc.soneium.org https://rpc.soniclabs.com https://rpc.zora.energy https://scroll-rpc.publicnode.com https://sei-evm-rpc.publicnode.com https://sonic-rpc.publicnode.com https://taiko-rpc.publicnode.com https://unichain-rpc.publicnode.com; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Safe to Send?</title>
-<meta name="description" content="Paste an address and pick the chain you are sending on: see whether the funds can be reached there, before you send. Catches Abstract wallets, Safes and other smart wallets that only exist on one chain. Read-only, no keys.">
+<meta name="description" content="Paste any address and pick the chain you are sending on: see whether the funds can be reached there, before you send. Catches smart wallets on the wrong chain, the wrong network, token contracts and typos. 32 chains read live. Read-only, no keys.">
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Safe to Send? Check an address before you send">
-<meta property="og:description" content="Paste an address and pick the chain: see whether funds sent there can be reached. Catches Abstract wallets, Safes and other smart wallets that only exist on one chain. Free, read-only, by Cryppit.">
+<meta property="og:description" content="Paste any address and pick the chain: see whether funds sent there can be reached. Catches smart wallets on the wrong chain, the wrong network and typos. Free, read-only, by Cryppit.">
 <meta property="og:url" content="https://cryppit.github.io/safe-to-send/">
 <meta property="og:image" content="https://cryppit.github.io/safe-to-send/og.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +23,7 @@
 <style>
   :root {
     --bg: #070b22; --deep: #04061a; --panel: #0c1236; --line: rgba(154, 163, 199, 0.2);
-    --ink: #f4f1e8; --mute: #9aa3c7; --lime: #ddf24a; --amber: #ffb547; --red: #ff6b6b; --blue: #8fb4ff; --glass: rgba(10, 15, 48, 0.72);
+    --ink: #f4f1e8; --mute: #9aa3c7; --lime: #ddf24a; --amber: #ffb547; --red: #ff6b6b; --blue: #8fb4ff; --cyan: #5ee0f0; --glass: rgba(10, 15, 48, 0.72);
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     --wallet: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3'/%3E%3Cpath d='M4 7.5V17a2 2 0 0 0 2 2h14V8H6.5A2.5 2.5 0 0 1 4 7.5z'/%3E%3Ccircle cx='16' cy='13.5' r='1.3' fill='%23000'/%3E%3C/svg%3E");
     color-scheme: dark;
@@ -34,103 +37,101 @@
   /* Small logos glow like on the other Cryppit sites. */
   .lg { flex: none; border-radius: 50%; filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35)); }
 
-  .top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 24px; max-width: 1240px; margin: 0 auto; padding: 14px 20px; background: linear-gradient(rgba(4, 6, 26, 0.96) 70%, rgba(4, 6, 26, 0)); }
+  .top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 24px; max-width: 1400px; margin: 0 auto; padding: 14px 20px; background: linear-gradient(rgba(4, 6, 26, 0.96) 70%, rgba(4, 6, 26, 0)); }
   .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 800; font-size: 19px; letter-spacing: -0.01em; }
   .brand span { white-space: nowrap; }
   .brand img { border-radius: 8px; filter: drop-shadow(0 0 8px rgba(221, 242, 74, 0.45)); }
-  .top-links { display: flex; gap: 22px; margin-left: 12px; }
-  .top-links a { color: var(--ink); text-decoration: none; font-size: 15px; opacity: 0.85; }
-  .top-links a:hover { opacity: 1; color: var(--lime); }
+  .tabs { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 13px; background: rgba(4, 6, 26, 0.7); }
+  .tab { padding: 7px 16px; border-radius: 9px; color: var(--ink); text-decoration: none; font-weight: 650; font-size: 14.5px; opacity: 0.8; }
+  .tab:hover { opacity: 1; }
+  .tab[aria-current="page"] { background: var(--lime); color: #04061a; opacity: 1; }
   .gh { margin-left: auto; border: 1px solid var(--line); border-radius: 12px; padding: 9px 16px; color: var(--ink); text-decoration: none; font-weight: 600; font-size: 14px; }
   .gh:hover { border-color: var(--lime); }
-  @media (max-width: 760px) { .top-links { display: none; } }
-  @media (max-width: 420px) { .brand { font-size: 16px; } .gh { padding: 8px 12px; } }
+  @media (max-width: 560px) { .gh { display: none; } .tabs { margin-left: auto; } .top { gap: 10px; } .brand { font-size: 16px; } }
+  @media (max-width: 380px) { .brand span { display: none; } }
 
-  main { max-width: 1240px; margin: 0 auto; padding: 8px 20px 64px; position: relative; z-index: 0; }
+  main { max-width: 1400px; margin: 0 auto; padding: 8px 20px 64px; position: relative; z-index: 0; }
   .banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 8px 0 6px; padding: 12px 16px; border-radius: 14px; border: 1px solid rgba(255, 181, 71, 0.45); background: linear-gradient(90deg, rgba(255, 181, 71, 0.12), rgba(255, 181, 71, 0.03)); font-size: 14.5px; scroll-margin-top: 80px; }
   .banner .count { display: inline-flex; align-items: center; gap: 8px; font: 700 13px var(--mono); color: var(--amber); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
   .banner .count::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 0 rgba(255, 181, 71, 0.7); animation: beacon 2s ease-out infinite; }
   @keyframes beacon { 70% { box-shadow: 0 0 0 9px rgba(255, 181, 71, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 181, 71, 0); } }
 
-  .hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) minmax(300px, 0.8fr); gap: 24px; align-items: start; padding: 22px 0 10px; }
-  @media (max-width: 1180px) { .hero { grid-template-columns: minmax(0, 1fr) minmax(300px, 0.8fr); } .hero-art { grid-column: 1 / -1; grid-row: 2; } }
-  @media (max-width: 760px) { .hero { grid-template-columns: minmax(0, 1fr); } .hero-art { grid-row: auto; } }
-  .chip { display: inline-flex; gap: 10px; align-items: center; border: 1px solid rgba(221, 242, 74, 0.35); background: rgba(221, 242, 74, 0.06); border-radius: 999px; padding: 6px 14px; font: 600 12px/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); margin: 0; }
-  .chip span { color: var(--lime); }
-  .hero h1 { font-size: clamp(40px, 4.4vw, 64px); line-height: 0.98; letter-spacing: -0.035em; margin: 18px 0 10px; font-weight: 850; }
+  .hero { display: grid; grid-template-columns: 372px minmax(0, 1fr); gap: 24px; align-items: stretch; padding: 14px 0 0; }
+  .hero-side { display: flex; flex-direction: column; min-width: 0; }
+  .hero-side .panel { flex: 1; }
+  @media (max-width: 1180px) { .hero { grid-template-columns: minmax(0, 1fr); } .hero-side { max-width: 620px; } }
+  .hero h1 { font-size: clamp(54px, 5.8vw, 84px); line-height: 0.94; letter-spacing: -0.04em; margin: 6px 0 12px; font-weight: 850; }
+  .hero h1 .hl { display: block; }
   .hl { color: var(--lime); text-shadow: 0 0 40px rgba(221, 242, 74, 0.3); }
-  .tagline { font-size: clamp(22px, 2.3vw, 30px); font-weight: 750; margin: 0 0 14px; letter-spacing: -0.015em; }
-  .lede { font-size: 17px; color: #d9dcec; margin: 0; }
-  .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin: 26px 0 0; }
-  .btn { display: inline-flex; align-items: center; min-height: 50px; padding: 0 22px; border-radius: 12px; font-weight: 700; text-decoration: none; }
-  .lime-btn { background: var(--lime); color: #04061a; box-shadow: 0 10px 30px -10px rgba(221, 242, 74, 0.7); }
-  .ghost-btn { border: 1px solid var(--line); color: var(--ink); }
-  .ghost-btn:hover { border-color: var(--lime); }
-  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 30px 0 0; }
-  .stats div { padding: 0 12px; border-left: 1px solid var(--line); min-width: 0; }
-  .stats div:first-child { padding-left: 0; border-left: 0; }
-  .stats dt { font-size: 18px; font-weight: 800; color: var(--lime); white-space: nowrap; }
-  .stats dd { margin: 2px 0 0; color: var(--mute); font-size: 13px; }
-  @media (max-width: 560px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 16px; } .stats div:nth-child(3) { padding-left: 0; border-left: 0; } }
+  .tagline { font-size: 21px; font-weight: 750; margin: 0 0 16px; letter-spacing: -0.015em; }
+  .lede { font-size: 18px; color: #d9dcec; margin: 0; max-width: 68ch; }
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin: 24px 0 0; }
+  .stats div { padding: 16px 20px; border-radius: 16px; border: 1px solid var(--line); background: var(--glass); min-width: 0; }
+  .stats dt { font-size: 24px; font-weight: 800; color: var(--lime); white-space: nowrap; letter-spacing: -0.015em; }
+  .stats dd { margin: 2px 0 0; color: var(--mute); font-size: 14px; }
+  @media (max-width: 760px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .stats div { padding: 12px 14px; } .stats dt { font-size: 19px; } }
+  .learn { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 18px; margin-top: 24px; padding: 18px 20px; border-radius: 16px; border: 1px solid rgba(221, 242, 74, 0.3); background: rgba(221, 242, 74, 0.05); color: var(--ink); text-decoration: none; }
+  .learn:hover { border-color: var(--lime); }
+  .learn-go { color: var(--lime); font-weight: 700; white-space: nowrap; }
 
-  /* The art: one address on the left, routes to five chains. It lives on Abstract (lime), its owner can recreate it on
-     ZKsync Era (amber), and on BNB Chain, Ethereum and Base the route breaks (red): funds sent there are lost. */
-  .hero-art { position: relative; min-height: 430px; border-radius: 24px; overflow: hidden; background: radial-gradient(closest-side at 25% 50%, rgba(221, 242, 74, 0.12), transparent 70%), url(art/safe.jpg) 62% center / cover no-repeat; box-shadow: inset 0 0 0 1px rgba(143, 180, 255, 0.2), 0 40px 120px -50px rgba(42, 59, 214, 0.8); }
-  .hero-art::after { content: ""; position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 50%, transparent 40%, var(--deep) 100%); pointer-events: none; }
-  .routes { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; overflow: visible; }
-  .rt { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; stroke-dasharray: 6 9; animation: flow 1.4s linear infinite; }
-  .rt.ok { stroke: var(--lime); filter: drop-shadow(0 0 5px rgba(221, 242, 74, 0.9)); }
-  .rt.maybe { stroke: var(--amber); filter: drop-shadow(0 0 5px rgba(255, 181, 71, 0.8)); animation-duration: 1.9s; }
-  .rt.lost { stroke: var(--red); stroke-dasharray: 3 8; opacity: 0.75; animation-duration: 2.6s; filter: drop-shadow(0 0 4px rgba(255, 107, 107, 0.7)); }
-  @keyframes flow { to { stroke-dashoffset: -30; } }
-  .addr-node { position: absolute; z-index: 3; left: 22%; top: 50%; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 8px; text-align: center; line-height: 1.35; font: 700 12px var(--mono); text-shadow: 0 2px 10px #000; }
-  .addr-node i { width: 104px; height: 104px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #222a6a, #070b22 70%); box-shadow: inset 0 0 0 3px var(--lime), inset 0 0 0 10px rgba(221, 242, 74, 0.14), 0 0 0 6px rgba(221, 242, 74, 0.1), 0 0 70px rgba(221, 242, 74, 0.45); animation: pulse 4s ease-in-out infinite; }
-  .addr-node i::before { content: ""; width: 44px; height: 44px; background: var(--lime); -webkit-mask: var(--wallet) center / contain no-repeat; mask: var(--wallet) center / contain no-repeat; filter: drop-shadow(0 0 6px rgba(221, 242, 74, 0.9)); }
-  @keyframes pulse { 0%, 100% { box-shadow: inset 0 0 0 3px var(--lime), inset 0 0 0 10px rgba(221, 242, 74, 0.14), 0 0 0 6px rgba(221, 242, 74, 0.1), 0 0 70px rgba(221, 242, 74, 0.45); } 50% { box-shadow: inset 0 0 0 3px #8fb4ff, inset 0 0 0 10px rgba(143, 180, 255, 0.18), 0 0 0 10px rgba(143, 180, 255, 0.1), 0 0 90px rgba(143, 180, 255, 0.6); } }
-  .dests { position: absolute; z-index: 2; inset: 0; margin: 0; padding: 0; list-style: none; }
-  .dests li { position: absolute; left: 62%; top: var(--y); transform: translate(-26px, -50%); display: flex; align-items: center; gap: 10px; font: 700 13px system-ui, sans-serif; text-shadow: 0 2px 8px #000; white-space: nowrap; }
-  .dests li span { display: grid; line-height: 1.2; }
-  .dests small { font: 700 10.5px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; }
-  .dests img { width: 52px; height: 52px; padding: 9px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #18204f, #070b22 70%); box-shadow: inset 0 0 0 2px var(--c), 0 0 22px var(--g); animation: bob 5s ease-in-out infinite; }
-  .dests .ok { --c: rgba(221, 242, 74, 0.85); --g: rgba(221, 242, 74, 0.45); } .dests .ok small { color: var(--lime); }
-  .dests .maybe { --c: rgba(255, 181, 71, 0.85); --g: rgba(255, 181, 71, 0.4); } .dests .maybe small { color: var(--amber); }
-  .dests .lost { --c: rgba(255, 107, 107, 0.85); --g: rgba(255, 107, 107, 0.35); } .dests .lost small { color: var(--red); }
-  .dests li:nth-child(2) img { animation-delay: -1s; } .dests li:nth-child(3) img { animation-delay: -2s; } .dests li:nth-child(4) img { animation-delay: -3s; } .dests li:nth-child(5) img { animation-delay: -4s; }
-  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-  .xmark { position: absolute; z-index: 2; left: var(--x); top: var(--y); width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; display: grid; place-items: center; background: #1a0710; color: var(--red); font: 800 12px/1 system-ui, sans-serif; box-shadow: inset 0 0 0 2px var(--red), 0 0 16px rgba(255, 107, 107, 0.6); animation: blink 2.4s ease-in-out infinite; }
-  .xmark:nth-of-type(2) { animation-delay: -0.8s; } .xmark:nth-of-type(3) { animation-delay: -1.6s; }
-  @keyframes blink { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.18); opacity: 0.75; } }
-  .float { position: absolute; z-index: 4; display: grid; gap: 1px; padding: 10px 14px; border-radius: 12px; background: var(--glass); border: 1px solid rgba(221, 242, 74, 0.28); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font-size: 12.5px; box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.8); }
-  .float b { font-size: 13.5px; } .float span { color: var(--mute); }
-  .float.bad { border-color: rgba(255, 107, 107, 0.45); } .float.bad b { color: var(--red); }
-  .f1 { left: 5%; top: 6%; } .f2 { left: 5%; bottom: 6%; }
-  @media (max-width: 560px) { .addr-node i { width: 80px; height: 80px; } .addr-node i::before { width: 34px; height: 34px; } .dests img { width: 40px; height: 40px; padding: 7px; } .dests li { left: 60%; transform: translate(-20px, -50%); font-size: 12px; } .float { display: none; } .hero-art { min-height: 360px; } }
-
-  .panel { padding: 22px; border-radius: 20px; background: var(--glass); border: 1px solid var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 30px 80px -40px rgba(42, 59, 214, 0.6); scroll-margin-top: 80px; }
-  .panel h2 { font-size: 22px; margin: 0 0 14px; }
-  .panel form { display: grid; gap: 10px; }
+  .panel { position: relative; z-index: 8; padding: 22px; border-radius: 20px; background: var(--glass); border: 1px solid var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 30px 80px -40px rgba(42, 59, 214, 0.6); scroll-margin-top: 80px; }
+    .panel form { display: grid; gap: 10px; }
   .panel label { font: 600 12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
   .panel input, .panel select { width: 100%; background: #050822; color: var(--ink); border: 1px solid rgba(154, 163, 199, 0.35); border-radius: 12px; padding: 13px 14px; font: 14px var(--mono); }
   .pick { position: relative; }
-  .pick img { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; pointer-events: none; }
-  .panel .pick select { padding-left: 46px; font-family: system-ui, sans-serif; }
+  .pick-btn { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 14px 0 12px; border-radius: 12px; border: 1px solid rgba(154, 163, 199, 0.35); background: #050822; color: var(--ink); font: 600 15px system-ui, sans-serif; text-align: left; cursor: pointer; }
+  .pick-btn:hover, .pick-btn[aria-expanded="true"] { border-color: var(--lime); }
+  .pick-btn.empty { color: var(--mute); font-weight: 500; }
+  .chev { margin-left: auto; color: var(--mute); }
+  .pick-menu { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 6px); padding: 8px; border-radius: 14px; border: 1px solid rgba(221, 242, 74, 0.4); background: #070b26; box-shadow: 0 24px 60px -10px #000; }
+  .panel .pick-search { padding: 10px 12px; font: 14px system-ui, sans-serif; }
+  .pick-quick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+  .pick-pop { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 2px; border-radius: 10px; border: 1px solid var(--line); background: rgba(4, 6, 26, 0.6); color: var(--ink); font: 600 12px system-ui, sans-serif; cursor: pointer; }
+  .pick-pop img { width: 20px; height: 20px; border-radius: 50%; }
+  .pick-pop:hover { border-color: var(--lime); }
+  .pick-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .pick-tab { display: grid; gap: 1px; padding: 7px 9px; border-radius: 10px; border: 1px solid var(--line); background: rgba(4, 6, 26, 0.6); color: var(--ink); text-align: left; cursor: pointer; }
+  .pick-tab b { font-size: 13px; }
+  .pick-tab small { color: var(--mute); font-size: 11px; }
+  .pick-tab:hover { border-color: rgba(221, 242, 74, 0.5); }
+  .pick-tab.on { border-color: var(--lime); background: rgba(221, 242, 74, 0.12); }
+  .pick-tab.on b { color: var(--lime); }
+  .pick-list { list-style: none; margin: 8px 0 0; padding: 0; max-height: 240px; overflow-y: auto; }
+  .pick-group { position: sticky; top: 0; z-index: 1; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 8px 8px 6px; background: #070b26; border-bottom: 1px solid var(--line); }
+  .pick-group b { font-size: 13px; color: var(--lime); }
+  .pick-group small { color: var(--mute); font-size: 11.5px; }
+  .pick-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 9px; cursor: pointer; font-size: 14.5px; }
+  .pick-row img { width: 26px; height: 26px; padding: 3px; border-radius: 50%; background: #0c1236; }
+  .pick-row em { font: 600 10.5px var(--mono); font-style: normal; color: var(--mute); white-space: nowrap; }
+  .pick-row:hover, .pick-row.active { background: rgba(221, 242, 74, 0.1); }
+  .pick-row.on { background: rgba(221, 242, 74, 0.16); }
+  .pick-row.on span { color: var(--lime); font-weight: 700; }
+  .pick-pointer { display: grid; gap: 4px; justify-items: start; padding: 8px 10px; margin-bottom: 6px; border-radius: 10px; background: rgba(143, 180, 255, 0.1); color: #d9dcec; font-size: 12.5px; line-height: 1.35; }
+  .pick-pointer button { padding: 0; border: 0; background: none; color: var(--lime); font: 700 12.5px system-ui, sans-serif; cursor: pointer; }
+  .pick-none { padding: 14px 8px; color: var(--mute); font-size: 14px; }
   button.go { width: 100%; min-height: 50px; background: var(--lime); color: #04061a; border: 0; border-radius: 12px; font: 700 15px system-ui; cursor: pointer; box-shadow: 0 10px 30px -12px rgba(221, 242, 74, 0.8); }
   button.go:disabled { opacity: 0.6; cursor: wait; }
   .hint { font-size: 12.5px; color: var(--mute); margin: 12px 0 0; }
-  .panel h3 { margin: 20px 0 10px; font-size: 16px; }
-  .examples { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .examples button { width: 100%; display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(4, 6, 26, 0.5); color: var(--ink); font: 13.5px system-ui, sans-serif; text-align: left; cursor: pointer; }
-  .examples button:hover { border-color: var(--lime); }
-  .ex-tag { font: 600 11px var(--mono); white-space: nowrap; }
+  .tries { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; font-size: 13px; color: var(--mute); }
+  .tries button { display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); background: rgba(4, 6, 26, 0.5); color: var(--ink); font: 13px system-ui, sans-serif; cursor: pointer; }
+  .tries button:hover { border-color: var(--lime); }
   .t-safe { color: var(--lime); } .t-caution { color: var(--amber); } .t-stop { color: var(--red); }
 
   /* A result: the route from the address to the chain you picked, played in when a check is new. */
-  #out, footer { max-width: 980px; margin-left: auto; margin-right: auto; }
-  #out { margin-top: 28px; scroll-margin-top: 80px; }
+  #out:not(:empty) { margin-top: 24px; }
+  #out { scroll-margin-top: 80px; }
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
   .card header { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-bottom: 14px; }
   .pill { font: 700 12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; border-radius: 999px; padding: 5px 11px; border: 1px solid; white-space: nowrap; }
-  .l-safe { color: var(--lime); } .l-caution { color: var(--amber); } .l-stop { color: var(--red); } .l-unknown { color: var(--blue); }
+  .l-safe { color: var(--lime); } .l-caution { color: var(--amber); } .l-stop { color: var(--red); } .l-unknown { color: var(--blue); } .l-format { color: var(--cyan); }
+  .card.format { border-color: rgba(94, 224, 240, 0.5); }
+  .hint.scope { color: var(--blue); }
+  .notice { margin: 10px 0; padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255, 181, 71, 0.5); background: rgba(255, 181, 71, 0.08); font-size: 14.5px; }
+  .rows-note { margin: 2px 0 0; font-size: 14px; }
+  .rows-h { margin: 18px 0 0; font-size: 16px; }
+  .rows-h:first-of-type { margin-top: 4px; }
+  .switch { margin-top: 14px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font: inherit; font-weight: 600; color: var(--ink); background: rgba(4, 6, 26, 0.55); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; }
+  .switch:hover { border-color: rgba(221, 242, 74, 0.5); }
   .card.stop { border-color: rgba(255, 107, 107, 0.55); box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.15), 0 20px 60px -30px rgba(255, 107, 107, 0.5); }
   .card.safe { border-color: rgba(221, 242, 74, 0.45); box-shadow: 0 20px 60px -30px rgba(221, 242, 74, 0.35); }
   .card.caution { border-color: rgba(255, 181, 71, 0.5); }
@@ -147,7 +148,7 @@
   .stop-n .badge { position: absolute; right: -5px; bottom: -5px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font: 800 11px/1 system-ui, sans-serif; background: var(--c); color: #04061a; box-shadow: 0 0 0 2px var(--panel); }
   .stop-n .bar { position: absolute; top: 23px; left: calc(50% + 30px); width: calc(100% - 60px); height: 2px; background: var(--c2, var(--lime)); transform-origin: 0 50%; }
   .stop-n .bar.broken { background: repeating-linear-gradient(90deg, var(--red) 0 5px, transparent 5px 11px); }
-  .s-ok { --c: var(--lime); } .s-maybe { --c: var(--amber); } .s-lost { --c: var(--red); } .s-unknown { --c: var(--blue); } .s-plain { --c: #8fb4ff; }
+  .s-ok { --c: var(--lime); } .s-maybe { --c: var(--amber); } .s-lost { --c: var(--red); } .s-unknown { --c: var(--blue); } .s-format { --c: var(--cyan); } .s-plain { --c: #8fb4ff; }
   @media (max-width: 560px) { .stop-n b { font-size: 12.5px; } .stop-n .dot { width: 40px; height: 40px; } .stop-n .dot img { width: 24px; height: 24px; } .stop-n .bar { top: 19px; left: calc(50% + 26px); width: calc(100% - 52px); } }
   .chains { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
   .chains li { display: inline-flex; align-items: center; gap: 6px; font: 12.5px var(--mono); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px 4px 5px; color: var(--mute); }
@@ -170,22 +171,43 @@
   .reading .orbit img:nth-child(2) { animation-delay: 0.15s; } .reading .orbit img:nth-child(3) { animation-delay: 0.3s; } .reading .orbit img:nth-child(4) { animation-delay: 0.45s; } .reading .orbit img:nth-child(5) { animation-delay: 0.6s; }
   @keyframes hop { 0%, 100% { transform: translateY(0); opacity: 0.55; } 40% { transform: translateY(-6px); opacity: 1; } }
 
-  .how { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 24px; margin-top: 40px; align-items: start; scroll-margin-top: 80px; }
-  @media (max-width: 960px) { .how { grid-template-columns: minmax(0, 1fr); } }
-  .flow-card, .result-card, .feat, .states, .reads { padding: 24px; border-radius: 20px; background: var(--glass); border: 1px solid var(--line); }
-  .flow-card h2, .states h2, .reads h2 { margin: 0 0 4px; font-size: 24px; }
-  .flow { list-style: none; margin: 26px 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+  .feat { padding: 20px; border-radius: 16px; background: var(--glass); border: 1px solid var(--line); }
+  .ex-head { padding: 26px 0 8px; scroll-margin-top: 80px; }
+  .ex-head h1 { margin: 6px 0 10px; font-size: clamp(36px, 5vw, 60px); line-height: 1; letter-spacing: -0.035em; font-weight: 850; }
+  .ex-grid { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; margin-top: 18px; align-items: start; }
+  .toc { position: sticky; top: 84px; display: grid; gap: 2px; padding: 10px; border-radius: 16px; background: var(--glass); border: 1px solid var(--line); }
+  .toc a { padding: 8px 12px; border-radius: 9px; color: var(--ink); text-decoration: none; font-size: 14.5px; opacity: 0.85; }
+  .toc a:hover { opacity: 1; background: rgba(221, 242, 74, 0.08); color: var(--lime); }
+  .ex-body { display: grid; gap: 24px; min-width: 0; }
+  .sec { padding: 24px; border-radius: 20px; background: var(--glass); border: 1px solid var(--line); scroll-margin-top: 84px; min-width: 0; }
+  .sec h2 { margin: 0 0 10px; font-size: 26px; letter-spacing: -0.02em; }
+  .sec > p { margin: 0 0 10px; max-width: 76ch; color: #d9dcec; }
+  .sec > p:last-child { margin-bottom: 0; }
+  .plain { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; max-width: 80ch; }
+  .plain li { padding-left: 16px; border-left: 2px solid var(--line); color: #d9dcec; }
+  .plain b { color: var(--ink); }
+  .warn-box { margin: 16px 0 0 !important; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(255, 107, 107, 0.45); background: rgba(255, 107, 107, 0.08); max-width: none !important; }
+  .answers { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+  .ans { display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 14px; border: 1px solid var(--line); border-top: 3px solid var(--c); background: rgba(4, 6, 26, 0.55); font-size: 14px; color: #c9cde6; min-width: 0; }
+  .ans b { font-size: 17px; color: var(--c); }
+  .ans p { margin: 0; }
+  .ans .do { margin-top: auto; padding-top: 8px; color: var(--ink); font-weight: 600; }
+  .ans.ok { --c: var(--lime); } .ans.warn { --c: var(--amber); } .ans.bad { --c: var(--red); } .ans.info { --c: var(--blue); } .ans.fmt { --c: var(--cyan); }
+  .words { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }
+  .words div { min-width: 0; }
+  .words dt { font-weight: 700; }
+  .words dd { margin: 2px 0 0; color: var(--mute); font-size: 14.5px; }
+  @media (max-width: 1180px) { .answers { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 860px) { .ex-grid { grid-template-columns: minmax(0, 1fr); } .toc { position: static; display: flex; flex-wrap: wrap; gap: 4px; } .toc a { padding: 6px 10px; font-size: 13.5px; } .answers { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sec { padding: 18px; } }
+  @media (max-width: 520px) { .answers, .words { grid-template-columns: minmax(0, 1fr); } }
+  .flow { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
   .flow li { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; font-size: 13.5px; color: var(--mute); }
   .flow b { color: var(--ink); font-size: 15px; margin-top: 6px; }
   .flow li:not(:last-child)::after { content: ""; position: absolute; top: 30px; left: calc(50% + 38px); width: calc(100% - 64px); border-top: 2px dotted rgba(221, 242, 74, 0.5); }
-  .fi { width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, rgba(221, 242, 74, 0.12), rgba(4, 6, 26, 0.9) 70%); box-shadow: inset 0 0 0 2px var(--c, var(--lime)), 0 0 24px color-mix(in srgb, var(--c, var(--lime)) 45%, transparent); }
+  .fi { flex: none; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, rgba(221, 242, 74, 0.12), rgba(4, 6, 26, 0.9) 70%); box-shadow: inset 0 0 0 2px var(--c, var(--lime)), 0 0 24px color-mix(in srgb, var(--c, var(--lime)) 45%, transparent); }
   .fi::before { content: ""; width: 26px; height: 26px; background: var(--c, var(--lime)); -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
   @media (max-width: 760px) { .flow { grid-template-columns: minmax(0, 1fr); } .flow li { flex-direction: row; text-align: left; align-items: center; } .flow li::after { display: none; } .flow b { margin: 0 6px 0 4px; white-space: nowrap; min-width: 84px; } }
   .eyebrow { font: 600 12px/1.2 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); margin: 0; }
-  .bad-title { color: var(--red); font-size: 22px; margin: 6px 0 4px; }
-  .result-card .route { margin: 20px 0 14px; }
-  .more-link { background: none; border: 0; padding: 0; color: var(--lime); font: 14px system-ui, sans-serif; cursor: pointer; }
-
   /* Icons are masks, so one shape takes any colour. */
   .i-paste { --c: #5ee0f0; --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Crect x='6' y='4' width='12' height='17' rx='2'/%3E%3Cpath d='M9 4V3h6v1M9 10h6M9 14h6' stroke-linecap='round'/%3E%3C/svg%3E"); }
   .i-read { --c: #8fb4ff; --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 3l9 5-9 5-9-5z'/%3E%3Cpath d='M3 12.5l9 5 9-5M3 16.5l9 5 9-5'/%3E%3C/svg%3E"); }
@@ -195,42 +217,130 @@
   .i-wallet { --m: var(--wallet); }
   .i-key { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='15' r='4'/%3E%3Cpath d='M11 12l9-9M17 6l3 3M14 9l2 2'/%3E%3C/svg%3E"); }
 
-  .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 24px; scroll-margin-top: 80px; }
-  @media (max-width: 960px) { .features { grid-template-columns: minmax(0, 1fr); } }
+  .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+  @media (max-width: 1180px) { .features { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .features { grid-template-columns: minmax(0, 1fr); } }
   .feat { position: relative; overflow: hidden; z-index: 0; }
   .feat::before { content: ""; position: absolute; inset: 0; z-index: -1; background: url(art/net.jpg) center / cover no-repeat; opacity: 0.32; -webkit-mask-image: linear-gradient(110deg, transparent 35%, #000); mask-image: linear-gradient(110deg, transparent 35%, #000); }
-  .feat:nth-child(2)::before { background-position: 30% 70%; } .feat:nth-child(3)::before { background-position: 80% 20%; }
-  .feat h3 { font-size: 21px; margin: 14px 0 8px; }
-  .feat p { color: #c9cde6; font-size: 15px; margin: 0; }
-  .fx { width: 58px; height: 58px; border-radius: 16px; display: grid; place-items: center; background: rgba(4, 6, 26, 0.7); box-shadow: inset 0 0 0 2px var(--c), 0 0 26px color-mix(in srgb, var(--c) 40%, transparent); }
-  .fx::before { content: ""; width: 30px; height: 30px; background: var(--c); -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
-  .fx.k { --c: var(--lime); } .fx.w { --c: var(--amber); } .fx.x { --c: var(--red); }
-  .feat .k-t { color: var(--lime); } .feat .w-t { color: var(--amber); } .feat .x-t { color: var(--red); }
-  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px !important; }
-  .tags span { border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; font-size: 12px; color: var(--ink); background: rgba(4, 6, 26, 0.6); }
-
-  .states, .reads { margin-top: 24px; }
-  .state-grid { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-  @media (max-width: 860px) { .state-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 420px) { .state-grid { grid-template-columns: minmax(0, 1fr); } }
-  .st { display: grid; gap: 4px; padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(4, 6, 26, 0.55); font-size: 13.5px; color: var(--mute); }
-  .st b { font-size: 15px; }
-  .st.ok b { color: var(--lime); } .st.warn b { color: var(--amber); } .st.info b { color: var(--blue); } .st.bad b { color: var(--red); }
-  .st.ok { box-shadow: inset 3px 0 0 var(--lime); } .st.warn { box-shadow: inset 3px 0 0 var(--amber); } .st.info { box-shadow: inset 3px 0 0 var(--blue); } .st.bad { box-shadow: inset 3px 0 0 var(--red); }
-  .chainrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
-  .chainrow li { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; background: rgba(4, 6, 26, 0.55); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 7px; transition: border-color 0.2s, transform 0.2s; }
-  .chainrow li:hover { border-color: rgba(221, 242, 74, 0.5); transform: translateY(-2px); }
-  .chainrow img { width: 30px; height: 30px; padding: 5px; filter: none; background: radial-gradient(circle at 35% 30%, #18204f, #070b22 70%); box-shadow: inset 0 0 0 1.5px rgba(221, 242, 74, 0.6), 0 0 14px rgba(221, 242, 74, 0.3); }
-  .chainrow li:hover img { box-shadow: inset 0 0 0 1.5px var(--lime), 0 0 20px rgba(221, 242, 74, 0.55); }
+  .feat:nth-child(3n+2)::before { background-position: 30% 70%; } .feat:nth-child(3n)::before { background-position: 80% 20%; }
+  .feat h3 { font-size: 18px; margin: 12px 0 6px; line-height: 1.2; }
+  .feat p { color: #c9cde6; font-size: 14.5px; margin: 0; }
+  .fx { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; background: rgba(4, 6, 26, 0.7); box-shadow: inset 0 0 0 2px var(--c), 0 0 26px color-mix(in srgb, var(--c) 40%, transparent); }
+  .fx::before { content: ""; width: 24px; height: 24px; background: var(--c); -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
+  .fx.k { --c: var(--lime); } .fx.w { --c: var(--amber); } .fx.x { --c: var(--red); } .fx.c { --c: var(--cyan); }
+  .feat .k-t { color: var(--lime); } .feat .w-t { color: var(--amber); } .feat .x-t { color: var(--red); } .feat .c-t { color: var(--cyan); }
+  .chainrow { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
+  .chainrow li { display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 6px; padding: 10px 6px; text-align: center; font-size: 13px; line-height: 1.2; background: rgba(4, 6, 26, 0.55); border: 1px solid var(--line); border-radius: 12px; }
+  .chainrow img { width: 32px; height: 32px; padding: 5px; filter: none; background: radial-gradient(circle at 35% 30%, #18204f, #070b22 70%); box-shadow: inset 0 0 0 1.5px rgba(221, 242, 74, 0.6); }
   .chainrow small { color: var(--amber); font: 11px var(--mono); }
   /* The near-black logos (Abstract, Linea, Sonic, ZKsync, Gnosis) get a light disc, as on Where's My Withdrawal. */
-  img[src$="/abstract.svg"], img[src$="/linea.svg"], img[src$="/sonic.svg"], img[src$="/zksync.svg"], img[src$="/gnosis.svg"] { background: radial-gradient(circle, #f3efe4 55%, #cfd3e8) !important; }
+  img[src$="/abstract.svg"], img[src$="/linea.svg"], img[src$="/sonic.svg"], img[src$="/zksync.svg"], img[src$="/gnosis.svg"], img[src$="/aptos.svg"], img[src$="/cronos.svg"], img[src$="/lisk.svg"], img[src$="/plasma.svg"], img[src$="/soneium.svg"], img[src$="/stellar.svg"], img[src$="/token-aleo.svg"] { background: radial-gradient(circle, #f3efe4 55%, #cfd3e8) !important; }
+  /* The flow: every kind of address runs into the check, and lands on the answer it really gets. */
+  .stage { position: relative; isolation: isolate; overflow: hidden; min-width: 0; display: flex; flex-direction: column; padding: 18px 20px 18px; border-radius: 24px; border: 1px solid rgba(221, 242, 74, 0.22); background: linear-gradient(180deg, rgba(10, 15, 48, 0.86), rgba(4, 6, 26, 0.94)); box-shadow: 0 50px 120px -60px rgba(42, 59, 214, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.05); scroll-margin-top: 76px; }
+  .stage::before { content: ""; position: absolute; inset: 0; z-index: -2; background: url(art/safe.jpg) center / cover no-repeat; opacity: 0.2; -webkit-mask-image: radial-gradient(70% 80% at 50% 55%, #000, transparent); mask-image: radial-gradient(70% 80% at 50% 55%, #000, transparent); }
+  .stage::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(460px 380px at 50% 52%, rgba(221, 242, 74, 0.11), transparent 70%), linear-gradient(rgba(143, 180, 255, 0.05) 1px, transparent 1px) 0 0 / 100% 44px, linear-gradient(90deg, rgba(143, 180, 255, 0.05) 1px, transparent 1px) 0 0 / 44px 100%; -webkit-mask-image: radial-gradient(75% 75% at 50% 50%, #000 30%, transparent); mask-image: radial-gradient(75% 75% at 50% 50%, #000 30%, transparent); }
+  .stage-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px 16px; margin-bottom: 12px; }
+  .demo-toggle { flex: none; padding: 7px 13px; border-radius: 10px; border: 1px solid var(--line); background: rgba(4, 6, 26, 0.6); color: var(--ink); font: 600 13px system-ui, sans-serif; cursor: pointer; }
+  .demo-toggle:hover { border-color: var(--lime); }
+  .stage-head h2 { margin: 0; font-size: clamp(22px, 2.1vw, 30px); line-height: 1.1; letter-spacing: -0.025em; font-weight: 850; }
+  .stage-head p { margin: 0; font-size: 14px; }
+  .lv-safe { --v: var(--lime); } .lv-caution { --v: var(--amber); } .lv-stop { --v: var(--red); } .lv-unknown { --v: var(--blue); } .lv-format { --v: var(--cyan); }
+  .rig { --core: clamp(286px, 25vw, 372px); flex: 1; position: relative; display: grid; grid-template-columns: minmax(196px, 232px) minmax(0, 1fr) minmax(148px, 178px); align-items: center; gap: 0; }
+  .wires { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: visible; }
+  .wires.over { z-index: 3; }
+  .wire { fill: none; stroke: rgba(143, 180, 255, 0.2); stroke-width: 1.3; stroke-dasharray: 2 7; stroke-linecap: round; }
+  .wire-lit { fill: none; stroke-width: 2.6; stroke-linecap: round; filter: drop-shadow(0 0 7px currentColor) drop-shadow(0 0 2px currentColor); }
+  .comet { filter: drop-shadow(0 0 10px currentColor) drop-shadow(0 0 22px currentColor); }
+  .sources, .gates { position: relative; z-index: 4; list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .src { width: 100%; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 6px 9px; border-radius: 13px; border: 1px solid var(--line); background: rgba(6, 9, 34, 0.86); color: var(--ink); text-align: left; cursor: pointer; transition: border-color 0.25s, box-shadow 0.25s; }
+  .src > img { width: 26px; height: 26px; padding: 3px; border-radius: 50%; background: #0c1236; }
+  .src-t { display: grid; min-width: 0; line-height: 1.2; }
+  .src-t b { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .src-t code { font: 11px var(--mono); color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .src-to { display: grid; justify-items: center; gap: 1px; max-width: 62px; color: var(--mute); }
+  .src-to small { max-width: 62px; font-size: 9.5px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .src-to img { width: 17px; height: 17px; padding: 2px; border-radius: 50%; background: #0c1236; }
+  img[src$="/base.svg"] { padding: 0 !important; border-radius: 50%; }
+  .src:hover { border-color: rgba(143, 180, 255, 0.6); }
+  .src.on { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue), 0 0 28px -4px rgba(143, 180, 255, 0.75); }
+  .core { position: relative; justify-self: center; width: var(--core); height: var(--core); border-radius: 50%; }
+  .core::before, .core::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
+  .core::before { inset: 0; background: radial-gradient(circle, rgba(12, 18, 54, 0.92) 58%, rgba(12, 18, 54, 0.35) 72%, transparent 74%); box-shadow: inset 0 0 0 1px rgba(221, 242, 74, 0.2); }
+  .core::after { inset: calc(var(--core) * 0.135); box-shadow: inset 0 0 0 1px rgba(143, 180, 255, 0.2); }
+  .ring { position: absolute; inset: 0; }
+  .ring.outer { --rad: calc(var(--core) / 2 - 18px); --coin: calc(var(--core) * 0.074); }
+  .ring.inner { --rad: calc(var(--core) * 0.335); --coin: calc(var(--core) * 0.074); }
+  .coin { all: unset; cursor: pointer; position: absolute; left: 50%; top: 50%; width: var(--coin); height: var(--coin); margin: calc(var(--coin) / -2) 0 0 calc(var(--coin) / -2); transform: rotate(var(--a)) translateY(calc(var(--rad) * -1)) rotate(calc(var(--a) * -1)); }
+  .face { position: relative; display: block; width: 100%; height: 100%; }
+  .tag { position: absolute; left: 50%; bottom: calc(100% + 5px); transform: translateX(-50%); padding: 2px 7px; border-radius: 6px; background: #04061a; border: 1px solid var(--lime); color: var(--ink); font: 700 11px system-ui, sans-serif; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+  .coin:hover, .coin:focus-visible, .coin.hit { z-index: 5; }
+  .coin:hover .tag, .coin:focus-visible .tag, .coin.hit .tag { opacity: 1; }
+  .ring:hover { z-index: 5; }
+  .coin:hover img, .coin:focus-visible img { transform: scale(1.35); box-shadow: inset 0 0 0 2px var(--lime), 0 0 16px var(--lime); }
+  .coin img { display: block; width: 100%; height: 100%; padding: 12%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #18204f, #070b22 72%); box-shadow: inset 0 0 0 1px rgba(143, 180, 255, 0.35); transition: box-shadow 0.3s, transform 0.3s; }
+  .coin.hit { z-index: 3; }
+  .coin.hit img { transform: scale(1.5); box-shadow: inset 0 0 0 2px var(--lime), 0 0 18px var(--lime); }
+  .hub { z-index: 4; pointer-events: none; position: absolute; left: 50%; top: 50%; width: calc(var(--core) * 0.47); height: calc(var(--core) * 0.47); transform: translate(-50%, -50%); display: grid; align-content: center; justify-items: center; gap: 3px; padding: 10px; text-align: center; border-radius: 50%; background: radial-gradient(circle at 35% 28%, #1d2566, #070b22 74%); box-shadow: inset 0 0 0 2px var(--hub, var(--lime)), inset 0 0 0 9px color-mix(in srgb, var(--hub, var(--lime)) 14%, transparent), 0 0 70px -6px var(--hub, var(--lime)); transition: box-shadow 0.35s; }
+  .hub-logo { width: calc(var(--core) * 0.125); height: calc(var(--core) * 0.125); border-radius: 50%; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3)); }
+  .hub b { font-size: clamp(14px, 1.35vw, 17px); line-height: 1.15; }
+  .hub small { font: 600 10.5px/1.25 var(--mono); color: var(--hub, var(--lime)); letter-spacing: 0.02em; }
+  .core.reading .hub { --hub: var(--blue); animation: scanhub 0.55s ease-in-out infinite alternate; }
+  @keyframes scanhub { to { box-shadow: inset 0 0 0 2px var(--blue), inset 0 0 0 14px rgba(143, 180, 255, 0.2), 0 0 90px 2px var(--blue); } }
+  .core[data-level="safe"] .hub { --hub: var(--lime); } .core[data-level="caution"] .hub { --hub: var(--amber); } .core[data-level="stop"] .hub { --hub: var(--red); } .core[data-level="unknown"] .hub { --hub: var(--blue); } .core[data-level="format"] .hub { --hub: var(--cyan); }
+  .gate { display: grid; grid-template-columns: 36px minmax(0, 1fr); align-items: center; gap: 9px; padding: 8px 10px 8px 8px; border-radius: 14px; border: 1px solid var(--line); background: rgba(6, 9, 34, 0.86); opacity: 0.62; transition: opacity 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s; }
+  .gate-m { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; color: var(--v); font: 800 16px system-ui, sans-serif; background: radial-gradient(circle at 35% 30%, #18204f, #070b22 72%); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--v) 70%, transparent); }
+  .gate-t { display: grid; min-width: 0; line-height: 1.2; }
+  .gate-t b { font-size: 14px; color: var(--v); }
+  .gate-t small { font-size: 11.5px; color: var(--mute); }
+  .gate.on { opacity: 1; border-color: var(--v); box-shadow: 0 0 0 1px var(--v), 0 0 38px -4px var(--v); }
+  .gate.on .gate-m { background: var(--v); color: #04061a; box-shadow: 0 0 22px var(--v); }
+  .dests { position: relative; z-index: 2; display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; gap: 8px; margin-top: 12px; }
+  .dest-h { margin: 0; font: 600 11px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); white-space: nowrap; }
+  .dest-nudge { width: 28px; height: 56px; border-radius: 9px; border: 1px solid var(--line); background: rgba(6, 9, 34, 0.86); color: var(--ink); font-size: 18px; cursor: pointer; }
+  .dest-nudge:hover { border-color: var(--lime); }
+  .dest-row { display: flex; align-items: stretch; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 3px 1px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); }
+  .dest-row::-webkit-scrollbar { display: none; }
+  .dest-label { flex: none; align-self: center; padding: 0 6px 0 10px; font: 600 10px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--cyan); writing-mode: vertical-rl; transform: rotate(180deg); }
+  .dest { flex: none; width: 76px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 4px; padding: 6px 4px; border-radius: 10px; border: 1px solid var(--line); background: rgba(6, 9, 34, 0.86); color: var(--ink); font: 600 10.5px/1.15 system-ui, sans-serif; text-align: center; cursor: pointer; }
+  .dest img { width: 24px; height: 24px; padding: 3px; border-radius: 50%; background: #0c1236; }
+  .dest:hover { border-color: rgba(143, 180, 255, 0.6); }
+  .dest.on { border-color: var(--lime); box-shadow: 0 0 0 1px var(--lime), 0 0 16px -2px var(--lime); }
+  .readout { position: relative; z-index: 2; overflow: hidden; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 18px; margin-top: 14px; padding: 12px 18px; height: 132px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--v, var(--line)) 55%, transparent); background: rgba(6, 9, 34, 0.9); transition: border-color 0.3s; }
+  .ro-text { min-width: 0; }
+  .ro-text p { margin: 0; }
+  .ro-route { font: 12px var(--mono); color: var(--mute); }
+  .ro-title, .ro-detail { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  .ro-title { line-height: 1.2; font-size: 18px; font-weight: 800; letter-spacing: -0.015em; color: var(--v, var(--ink)); }
+  .ro-detail { color: #d9dcec; font-size: 14px; line-height: 1.35; }
+  .ro-go { white-space: nowrap; min-height: 44px; padding: 0 16px; border-radius: 11px; border: 1px solid var(--lime); background: transparent; color: var(--lime); font: 700 14px system-ui, sans-serif; cursor: pointer; }
+  .ro-go:hover { background: var(--lime); color: #04061a; }
+  .ro-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--v, var(--lime)); transform: scaleX(0); transform-origin: left; }
+  @media (max-width: 1180px) { .rig { --core: clamp(300px, 36vw, 380px); grid-template-columns: minmax(214px, 250px) minmax(0, 1fr) minmax(160px, 196px); min-height: calc(var(--core) + 90px); } }
+  @media (max-width: 980px) {
+    .stage { padding: 22px 14px 16px; border-radius: 22px; }
+    .rig { --core: min(320px, 84vw); grid-template-columns: minmax(0, 1fr); justify-items: center; row-gap: 46px; min-height: 0; }
+    .sources { width: calc(100% + 28px); margin: 0 -14px; padding: 4px 14px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; }
+    .sources::-webkit-scrollbar { display: none; }
+    .sources li { flex: none; scroll-snap-align: center; }
+    .src { width: 200px; }
+    .gates { width: 100%; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
+    .gate { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; gap: 5px; padding: 8px 2px; }
+    .gate-m { width: 34px; height: 34px; font-size: 14px; }
+    .gate-t b { font-size: 11px; }
+    .stage-head { flex-direction: column; }
+    .dests { grid-template-columns: minmax(0, 1fr); }
+    .dest-nudge { display: none; }
+    .gate-t small { display: none; }
+    .readout { grid-template-columns: minmax(0, 1fr); gap: 8px; height: auto; min-height: 232px; align-content: start; justify-items: start; padding: 14px 16px; }
+    .ro-title { font-size: 19px; }
+  }
   .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
   .reveal.in { opacity: 1; transform: none; }
-  footer { margin-top: 48px; font-size: 14px; }
+  footer { margin-top: 28px; padding: 0 4px; font-size: 14px; }
+  footer p { margin: 4px 0; }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .rt, .dests img, .addr-node i, .xmark, .banner .count::before, .reading .orbit img, .reading, .reading .ld-bar { animation: none; }
+    .banner .count::before, .reading .orbit img, .reading, .reading .ld-bar { animation: none; }
     .reveal { opacity: 1; transform: none; transition: none; }
   }
 </style>
@@ -238,306 +348,220 @@
 <body>
 <nav class="top" aria-label="Site">
   <a class="brand" href="#top"><img src="icons/favicon.svg" alt="" width="30" height="30"><span>Safe to Send?</span></a>
-  <span class="top-links"><a href="#how">How it works</a><a href="#why">Why chains differ</a><a href="#abstract">Abstract wallets</a><a href="https://cryppit.near.page/">Cryppit</a></span>
+  <span class="tabs"><a class="tab" id="tab-check" href="#top">Check</a><a class="tab" id="tab-explained" href="#explained">Explained</a></span>
   <a class="gh" href="https://github.com/cryppit/safe-to-send" target="_blank" rel="noopener noreferrer">GitHub</a>
 </nav>
 
 <main id="top">
-  <p class="banner" id="abstract"><span class="count" id="countdown">Abstract shuts down 15 Dec</span><span><b>Moving funds out of Abstract?</b> Never send to your Abstract wallet address on another chain: on BNB Chain, Ethereum, Base and the rest, nothing can ever reach them. This page keeps a list of every Abstract wallet, so it can warn you even after Abstract is gone.</span></p>
+  <div id="view-check">
+    <p class="banner" id="abstract"><span class="count" id="countdown">Abstract shuts down 15 Dec</span><span><b>Moving funds out?</b> Never send to your Abstract wallet address on another chain. It can't be reached there.</span></p>
 
-  <section class="hero">
-    <div class="hero-copy">
-      <p class="chip"><span>‹/›</span> Open source · MIT · Read-only</p>
-      <h1>Safe to <span class="hl">Send?</span></h1>
-      <p class="tagline">Check an address before you send.</p>
-      <p class="lede">An address that looks like any other can be a smart wallet that only exists on one chain. Send to it on the wrong chain and the money can be gone for good. Paste the address and pick the chain you are sending on: this reads the address on every chain and tells you whether funds sent there can be reached.</p>
-      <p class="ctas"><a class="btn lime-btn" href="#check">Check an address →</a><a class="btn ghost-btn" href="https://github.com/cryppit/safe-to-send" target="_blank" rel="noopener noreferrer">View on GitHub</a></p>
-      <dl class="stats">
-        <div><dt id="stat-chains">20 chains</dt><dd>read at once</dd></div>
-        <div><dt id="stat-agw">Abstract</dt><dd id="stat-agw-dd">wallets archived</dd></div>
-        <div><dt>0 keys</dt><dd>nothing to sign</dd></div>
-        <div><dt>MIT</dt><dd>open source</dd></div>
-      </dl>
+    <section class="hero">
+      <div class="hero-side">
+        <h1>Safe to <span class="hl">Send?</span></h1>
+        <p class="tagline">Check any address before you send.</p>
+
+        <aside class="panel" id="check">
+          <form id="f">
+            <label for="addr">Address you are sending to</label>
+            <input id="addr" autocomplete="off" spellcheck="false" placeholder="0x…, bc1…, name.eth" required>
+            <label id="chain-label" for="pick-btn">Chain you are sending on</label>
+            <div class="pick">
+              <button type="button" class="pick-btn" id="pick-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="chain-label pick-name"><img id="chain-logo" class="lg" src="icons/favicon.svg" alt="" width="24" height="24"><span id="pick-name">Pick a chain</span><span class="chev" aria-hidden="true">▾</span></button>
+              <select id="chain" hidden></select>
+            </div>
+            <button class="go" id="go" type="submit">Check address →</button>
+          </form>
+          <p class="hint scope" id="scope"></p>
+          <p class="hint">No wallet, no keys, nothing signed. It checks whether funds can be reached, not whether someone is honest. <a href="#limits">What it can't tell you</a></p>
+          <ul class="tries">
+            <li>Try:</li>
+            <li><button type="button" data-a="vitalik.eth" data-c="1">vitalik.eth</button></li>
+            <li><button type="button" data-a="0xd8b17dbd34391993ee11b501e6275bbc715e2529" data-c="56">Abstract on BNB</button></li>
+            <li><button type="button" data-a="bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq" data-c="56">Bitcoin on BNB</button></li>
+            <li><button type="button" data-a="rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh" data-c="xrp">XRP, no tag</button></li>
+          </ul>
+        </aside>
+      </div>
+
+      <section class="stage" id="flow" aria-labelledby="flow-h">
+        <div class="stage-head">
+          <div>
+            <h2 id="flow-h">Every kind of address. <span class="hl">One honest answer.</span></h2>
+            <p class="muted">Your turn: pick an address, then pick any chain. Every click runs a real check.</p>
+          </div>
+          <button type="button" class="demo-toggle" id="flow-toggle">Pause demo</button>
+        </div>
+        <div class="rig" id="rig"></div>
+        <div class="dests" id="dests"></div>
+        <div class="readout" id="readout"></div>
+      </section>
+    </section>
+
+    <div id="out" aria-live="polite"></div>
+
+    <dl class="stats">
+      <div><dt id="stat-chains">51 networks</dt><dd id="stat-chains-dd">32 read live</dd></div>
+      <div><dt>21</dt><dd>address types recognised</dd></div>
+      <div><dt>0 keys</dt><dd>nothing to sign</dd></div>
+      <div><dt>MIT</dt><dd>open source</dd></div>
+    </dl>
+
+    <a class="learn" href="#explained"><span><b>New to this?</b> See what every answer means, and what this tool can't do.</span><span class="learn-go">Read it explained →</span></a>
+  </div>
+
+  <div id="view-explained" hidden>
+    <header class="ex-head" id="explained">
+      <p class="eyebrow">Explained</p>
+      <h1>Everything, in plain words</h1>
+      <p class="lede">Safe to Send answers one question before you send crypto: if I send to this address on this chain, can the money be reached? There's no sign-up and no wallet to connect.</p>
+    </header>
+
+    <div class="ex-grid">
+      <nav class="toc" aria-label="On this page">
+        <a href="#idea">The idea</a>
+        <a href="#how">How a check works</a>
+        <a href="#answers">The five answers</a>
+        <a href="#why">What it catches</a>
+        <a href="#limits">What it can't tell you</a>
+        <a href="#sent">Already sent it?</a>
+        <a href="#exchanges">Exchanges</a>
+        <a href="#privacy">Your privacy</a>
+        <a href="#words">Words you'll see</a>
+        <a href="#reads">Networks</a>
+      </nav>
+
+      <div class="ex-body">
+        <section class="sec" id="idea">
+          <h2>The idea</h2>
+          <p>Think of an address as a house number, and a chain as a city. The same number can exist in many cities. In one city it's your house. In another it's an empty plot, or somebody else's house.</p>
+          <p>Your wallet usually can't see this. It only checks that the address looks valid, so it lets you send. Safe to Send looks at what's really at that address on the chain you picked, and on the others, before the money moves.</p>
+        </section>
+
+        <section class="sec" id="how">
+          <h2>How a check works</h2>
+          <ol class="flow">
+            <li><span class="fi i-paste" aria-hidden="true"></span><b>1. Paste</b><span>the address and the chain you are sending on</span></li>
+            <li><span class="fi i-verdict" aria-hidden="true"></span><b>2. Recognise</b><span>which network the address belongs to, and whether it has a typo</span></li>
+            <li><span class="fi i-read" aria-hidden="true"></span><b>3. Read</b><span id="flow-read">the address on every EVM chain at once</span></li>
+            <li><span class="fi i-archive" aria-hidden="true"></span><b>4. Look up</b><span>Safe owners, smart-account code and the Abstract wallet list</span></li>
+            <li><span class="fi i-send" aria-hidden="true"></span><b>5. Answer</b><span>one plain answer, with the reasons, before the money moves</span></li>
+          </ol>
+        </section>
+
+        <section class="sec" id="answers">
+          <h2>The five answers</h2>
+          <p>Every check ends in one of these.</p>
+          <ul class="answers">
+            <li class="ans ok"><b>Safe</b><p>Someone can reach funds sent here: a normal wallet, or a Safe that exists on this chain.</p><p class="do">Check it's the right person, then send.</p></li>
+            <li class="ans warn"><b>Caution</b><p>It might work, but something needs checking: a contract, or a Safe with different owners on another chain.</p><p class="do">Ask the recipient to confirm first.</p></li>
+            <li class="ans bad"><b>Stop</b><p>Funds sent here are likely lost: a wallet from another chain, a token contract, the wrong network or a typo.</p><p class="do">Don't send. Get the right address.</p></li>
+            <li class="ans info"><b>Can't tell</b><p>The address has never been used on any chain read, or a chain didn't answer.</p><p class="do">Send a small test first, or try again.</p></li>
+            <li class="ans fmt"><b>Format OK</b><p>The address is the right format for that network. Bitcoin, Solana and most others aren't read at all.</p><p class="do">This is a typo check only. It isn't a safety answer.</p></li>
+          </ul>
+        </section>
+
+        <section class="sec" id="why">
+          <h2>What it catches</h2>
+          <div class="features">
+            <article class="feat"><span class="fx k i-key" aria-hidden="true"></span><h3 class="k-t">Key wallets work everywhere</h3><p>A normal wallet address comes from a private key. The same key controls that address on every EVM chain, so funds sent on the "wrong" EVM chain can still be reached by importing the key there.</p></article>
+            <article class="feat"><span class="fx w i-wallet" aria-hidden="true"></span><h3 class="w-t">Smart wallets live on one chain</h3><p>Safes and other smart wallets are contracts. They exist only where they were created. On any other chain the same address has no code and no key behind it. Some can be created there later; some never can.</p></article>
+            <article class="feat"><span class="fx w i-wallet" aria-hidden="true"></span><h3 class="w-t">Same address, different owners</h3><p>A Safe can sit at one address on two chains with different people in charge. This compares the owners on every chain it reads, and warns you when they don't match. In 2022, that's how 20M OP ended up with someone else.</p></article>
+            <article class="feat"><span class="fx x i-verdict" aria-hidden="true"></span><h3 class="x-t">Abstract wallets can't follow you</h3><p>An Abstract wallet can never be recreated on BNB Chain, Ethereum or Base, because Abstract computes addresses differently. ZKsync Era works the same way as Abstract, so there its owner can most likely recreate it. The archive keeps <span id="tag-agw">every Abstract wallet</span>, so this still works after 15 Dec.</p></article>
+            <article class="feat"><span class="fx x i-verdict" aria-hidden="true"></span><h3 class="x-t">The wrong network stops here</h3><p>It recognises 21 address families, tells you which one you pasted, and offers to check it where it belongs. Sui and Aptos addresses start with 0x too, and they don't fool it.</p></article>
+            <article class="feat"><span class="fx w i-key" aria-hidden="true"></span><h3 class="w-t">Tags and memos, where a ledger shows them</h3><p>XRP and Stellar accounts can say they need a tag or memo. This reads that setting, and on XRP it also spots accounts that look shared. Most accounts declare nothing, so "no sign" never means "not needed".</p></article>
+            <article class="feat"><span class="fx x i-verdict" aria-hidden="true"></span><h3 class="x-t">Sanctioned and listed addresses</h3><p>An exact match on the US OFAC sanctions list gets a Stop. A reserve wallet that an exchange published itself gets a dated note. An address on neither list gets no comment, because no list covers everything.</p></article>
+            <article class="feat"><span class="fx k i-paste" aria-hidden="true"></span><h3 class="k-t">Names work too</h3><p>Paste an ENS name such as vitalik.eth. It finds the address the name points to on Ethereum, then checks that address on the chain you picked.</p></article>
+            <article class="feat"><span class="fx c i-paste" aria-hidden="true"></span><h3 class="c-t">Typos get caught, where they can be</h3><p>Most addresses carry a built-in typo check, and this runs it. It also catches sending to a token's own contract, where tokens usually stay stuck.</p></article>
+          </div>
+        </section>
+
+        <section class="sec" id="limits">
+          <h2>What it can't tell you</h2>
+          <ul class="plain">
+            <li><b>Whether someone is honest.</b> This is not a scam check. A scammer's wallet shows Safe, because the scammer can reach the money.</li>
+            <li><b>Who owns an address.</b> It tells you funds can be reached, not by whom. Always confirm the address with the recipient.</li>
+            <li><b>Anything live on most non-EVM networks.</b> Bitcoin, Solana and others are checked by format only, and nothing is read from them. XRP and Stellar are read only for tag and memo settings.</li>
+            <li><b>Whether you can skip a tag or memo.</b> Most exchange accounts don't declare that they need one, so "no sign" isn't a yes. Ask the recipient.</li>
+            <li><b>Whether a tag is right.</b> Only the recipient knows.</li>
+            <li><b>Every typo.</b> Solana, Sui, Aptos, Movement, Starknet and Fogo addresses have no built-in typo check, so a mistyped one can still pass.</li>
+            <li><b>Whether an exchange will credit you.</b> It doesn't recognise exchange deposit addresses, or know which networks and tokens an exchange accepts. <a href="#exchanges">More on exchanges</a></li>
+            <li><b>The future.</b> An answer is true for the moment it was read. Contracts and owners can change.</li>
+          </ul>
+        </section>
+
+        <section class="sec" id="sent">
+          <h2>Already sent it?</h2>
+          <p>Paste the address and the chain you sent on. The same answer shows who could still reach the funds.</p>
+          <ul class="plain">
+            <li><b>A normal wallet.</b> Whoever holds the key can reach the funds on that chain, usually by adding the network or importing the key there.</li>
+            <li><b>A Safe on another chain.</b> It may be possible to create the same Safe on this chain. That doesn't work for every Safe, so ask the owners quickly.</li>
+            <li><b>An Abstract wallet on another chain.</b> Nobody can recover it, except on ZKsync Era, where the owner most likely can.</li>
+            <li><b>Sent to an exchange.</b> See <a href="#exchanges">Exchanges</a> below, and only use the exchange's official site.</li>
+          </ul>
+          <p class="warn-box"><b>Watch for recovery scams.</b> People who lose funds get targeted. Never share your seed phrase, and ignore anyone who messages you offering to get the money back.</p>
+        </section>
+
+        <section class="sec" id="exchanges">
+          <h2>Exchanges</h2>
+          <p>An exchange deposit address usually looks like a normal wallet, so this tool can say Safe even when the exchange won't credit you. The exchange's own records decide that, and this tool can't see them.</p>
+          <ul class="plain">
+            <li><b>Wrong network or an unlisted token.</b> The funds often arrive but never show in your account. Some exchanges will recover them for a fee, from a dollar or so to hundreds of dollars. Others refuse.</li>
+            <li><b>Missing memo or tag.</b> The exchange has the funds but can't tell whose they are. You'll have to prove they're yours.</li>
+            <li><b>Below the minimum.</b> Several exchanges won't credit or return these at all.</li>
+            <li><b>Withdrawn to the wrong exchange.</b> Once it's on chain, the exchange you sent from generally can't cancel it. The receiving exchange holds the funds, so contact them with the transaction hash, and ask the sending exchange to back up your claim.</li>
+            <li><b>Sent to someone else's deposit address, or their memo.</b> The money is usually credited to that person. Exchanges often exclude this from recovery, because the balance now belongs to someone else.</li>
+          </ul>
+          <p class="warn-box"><b>Before any large transfer:</b> copy the address fresh from the deposit page, match the network on both sides, include the memo if there is one, and send a small test first.</p>
+        </section>
+
+        <section class="sec" id="privacy">
+          <h2>Your privacy</h2>
+          <ul class="plain">
+            <li><b>No account, no tracking.</b> There's no sign-up, analytics or cookies, and nothing is saved in your browser.</li>
+            <li><b>No Cryppit server.</b> Your browser does the work. The page itself blocks every connection except the public services below.</li>
+            <li><b>A full check is visible to public services.</b> Your browser asks each chain's public RPC service about the address, so those services can see the address and your IP address. An ENS name goes to Ethereum's. XRP and Stellar checks go to the XRP Ledger and Stellar public services.</li>
+            <li><b>A format check stays with you.</b> On every other network it runs in your browser and sends the address nowhere.</li>
+            <li><b>The lists are checked in your browser.</b> The sanctions and exchange lists are downloaded whole, so your address isn't sent to look them up.</li>
+            <li><b>Links can carry an address.</b> A link with <code>?address=</code> in it shows that address to anyone you share it with, and to the site host.</li>
+          </ul>
+        </section>
+
+
+        <section class="sec" id="words">
+          <h2>Words you'll see</h2>
+          <dl class="words">
+            <div><dt>Chain</dt><dd>A blockchain, like Ethereum or BNB Chain. The same as a network here.</dd></div>
+            <div><dt>EVM chain</dt><dd>A chain that works like Ethereum and uses 0x addresses with 40 characters after the 0x.</dd></div>
+            <div><dt>Key wallet</dt><dd>A normal wallet, controlled by one private key.</dd></div>
+            <div><dt>Smart wallet</dt><dd>A wallet that's a contract, so it only exists on chains where it was created.</dd></div>
+            <div><dt>Contract</dt><dd>A program living at an address on a chain.</dd></div>
+            <div><dt>Safe</dt><dd>A popular smart wallet shared by several owners. "3-of-5" means 3 of its 5 owners must approve.</dd></div>
+            <div><dt>EIP-7702</dt><dd>Lets a normal key wallet borrow smart-wallet features. It's still a key wallet.</dd></div>
+            <div><dt>ENS name</dt><dd>A readable name like vitalik.eth that points to an address.</dd></div>
+            <div><dt>Checksum</dt><dd>A built-in typo check in the address itself.</dd></div>
+            <div><dt>RPC</dt><dd>A public service that answers questions about a chain.</dd></div>
+          </dl>
+        </section>
+
+        <section class="sec" id="reads" aria-labelledby="reads-h">
+          <h2 id="reads-h">Networks</h2>
+          <h3 class="rows-h">Read live, all at once</h3>
+          <ul class="chainrow" id="chainrow"></ul>
+          <h3 class="rows-h">Checked by address format</h3>
+          <p class="muted rows-note">XRP and Stellar also get a read of their tag and memo settings.</p>
+          <ul class="chainrow" id="netrow"></ul>
+        </section>
+      </div>
     </div>
-
-    <div class="hero-art" aria-hidden="true">
-      <svg class="routes" viewBox="0 0 400 400" preserveAspectRatio="none">
-        <path class="rt ok" d="M88 200 C 170 200, 190 56, 248 56"/>
-        <path class="rt maybe" d="M88 200 C 170 200, 190 128, 248 128"/>
-        <path class="rt lost" d="M88 200 C 170 200, 190 200, 248 200"/>
-        <path class="rt lost" d="M88 200 C 170 200, 190 272, 248 272"/>
-        <path class="rt lost" d="M88 200 C 170 200, 190 344, 248 344"/>
-      </svg>
-      <span class="xmark" style="--x: 44.25%; --y: 50%">✕</span>
-      <span class="xmark" style="--x: 44.25%; --y: 59%">✕</span>
-      <span class="xmark" style="--x: 44.25%; --y: 68%">✕</span>
-      <div class="addr-node"><i></i><span>Abstract wallet<br>0xd8b1…2529</span></div>
-      <ul class="dests">
-        <li class="ok" style="--y: 14%"><img src="logos/abstract.svg" alt="" width="40" height="40"><span>Abstract<small>until 15 Dec</small></span></li>
-        <li class="maybe" style="--y: 32%"><img src="logos/zksync.svg" alt="" width="40" height="40"><span>ZKsync Era<small>can recover</small></span></li>
-        <li class="lost" style="--y: 50%"><img src="logos/binance-smart-chain.svg" alt="" width="40" height="40"><span>BNB Chain<small>lost</small></span></li>
-        <li class="lost" style="--y: 68%"><img src="logos/ethereum.svg" alt="" width="40" height="40"><span>Ethereum<small>lost</small></span></li>
-        <li class="lost" style="--y: 86%"><img src="logos/base.svg" alt="" width="40" height="40"><span>Base<small>lost</small></span></li>
-      </ul>
-      <div class="float f1"><b>One Abstract wallet</b><span>lives on one chain</span></div>
-      <div class="float f2 bad"><b>Abstract wallet on BNB</b><span>nobody can ever reach it</span></div>
-    </div>
-
-    <aside class="panel" id="check">
-      <h2>Check an address</h2>
-      <form id="f">
-        <label for="addr">Address you are sending to</label>
-        <input id="addr" autocomplete="off" spellcheck="false" placeholder="0x… the recipient address" required>
-        <label for="chain">Chain you are sending on</label>
-        <div class="pick"><img id="chain-logo" class="lg" src="logos/binance-smart-chain.svg" alt=""><select id="chain"></select></div>
-        <button class="go" id="go" type="submit">Check address →</button>
-      </form>
-      <p class="hint">Your browser asks public RPCs directly. No wallet, no keys, nothing signed.</p>
-      <h3>Real addresses</h3>
-      <ul class="examples" id="examples">
-        <li><button type="button" data-a="0xd8b17dbd34391993ee11b501e6275bbc715e2529" data-c="56"><img class="lg" src="logos/binance-smart-chain.svg" alt="" width="22" height="22"><span>An Abstract wallet, sent on BNB Chain</span><span class="ex-tag t-stop">lost</span></button></li>
-        <li><button type="button" data-a="0xd8b17dbd34391993ee11b501e6275bbc715e2529" data-c="324"><img class="lg" src="logos/zksync.svg" alt="" width="22" height="22"><span>The same wallet, sent on ZKsync Era</span><span class="ex-tag t-caution">owner can recover</span></button></li>
-        <li><button type="button" data-a="0x1d31f4bdc557bca4df3d238f089cecb3b7135fda" data-c="56"><img class="lg" src="logos/binance-smart-chain.svg" alt="" width="22" height="22"><span>A Safe that only exists on Ethereum</span><span class="ex-tag t-stop">don't send</span></button></li>
-        <li><button type="button" data-a="0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" data-c="8453"><img class="lg" src="logos/base.svg" alt="" width="22" height="22"><span>vitalik.eth (EIP-7702), sent on Base</span><span class="ex-tag t-safe">safe</span></button></li>
-        <li><button type="button" data-a="0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" data-c="1"><img class="lg" src="logos/ethereum.svg" alt="" width="22" height="22"><span>The USDC contract itself</span><span class="ex-tag t-stop">don't send</span></button></li>
-      </ul>
-    </aside>
-  </section>
-
-  <div id="out" aria-live="polite"></div>
-
-  <section class="how reveal" id="how">
-    <div class="flow-card">
-      <h2>How a check works</h2>
-      <p class="muted">From the address you paste to a clear answer, read from public RPCs only.</p>
-      <ol class="flow">
-        <li><span class="fi i-paste" aria-hidden="true"></span><b>1. Paste</b><span>the address and the chain you are sending on</span></li>
-        <li><span class="fi i-read" aria-hidden="true"></span><b>2. Read</b><span>the address on all 20 chains at once</span></li>
-        <li><span class="fi i-archive" aria-hidden="true"></span><b>3. Look up</b><span>the Abstract wallet list, Safe owners and EIP-7702 code</span></li>
-        <li><span class="fi i-verdict" aria-hidden="true"></span><b>4. Decide</b><span>safe, caution or stop, with the reasons</span></li>
-        <li><span class="fi i-send" aria-hidden="true"></span><b>5. Send</b><span>or don't: before the money moves</span></li>
-      </ol>
-    </div>
-    <div class="result-card">
-      <p class="eyebrow">A real result</p>
-      <h3 class="bad-title">Stop</h3>
-      <p class="muted">An Abstract wallet, sent on BNB Chain. Nothing lives at that address on BNB Chain and nothing ever can.</p>
-      <div id="example"></div>
-      <button type="button" class="more-link" data-a="0xd8b17dbd34391993ee11b501e6275bbc715e2529" data-c="56">Open the full check →</button>
-    </div>
-  </section>
-
-  <section class="features" id="why">
-    <article class="feat reveal">
-      <span class="fx k i-key" aria-hidden="true"></span>
-      <h3 class="k-t">Key wallets work everywhere</h3>
-      <p>A normal wallet address comes from a private key. The same key controls that address on every EVM chain, so funds sent on the "wrong" EVM chain can still be reached by importing the key there. EIP-7702 accounts are key wallets too.</p>
-      <p class="tags"><span>Key wallets</span><span>EIP-7702</span><span>Safe</span></p>
-    </article>
-    <article class="feat reveal">
-      <span class="fx w i-wallet" aria-hidden="true"></span>
-      <h3 class="w-t">Smart wallets live on one chain</h3>
-      <p>Safes, Abstract wallets and other smart wallets are contracts. They exist only on the chains where they were created. On any other chain the same address has no code and no key behind it. Some can be created there later at the same address; some never can.</p>
-      <p class="tags"><span>Safes</span><span>Smart accounts</span><span>Caution</span></p>
-    </article>
-    <article class="feat reveal">
-      <span class="fx x i-verdict" aria-hidden="true"></span>
-      <h3 class="x-t">Abstract wallets can't follow you</h3>
-      <p>Abstract runs EraVM, which computes contract addresses differently from standard EVM chains. An Abstract wallet can never be recreated on BNB Chain, Ethereum or Base. ZKsync Era also runs EraVM and has Abstract's wallet contracts, so there its owner can most likely recreate it.</p>
-      <p class="tags"><span id="tag-agw">Every Abstract wallet</span><span>Kept after 15 Dec</span><span>Stop</span></p>
-    </article>
-  </section>
-
-  <section class="states reveal">
-    <h2>What it tells apart</h2>
-    <p class="muted">Every check ends in one of these, from what the chains themselves say.</p>
-    <ul class="state-grid">
-      <li class="st ok"><b>Safe</b><span>A key wallet, an EIP-7702 account, or a Safe that lives on this chain.</span></li>
-      <li class="st warn"><b>Caution</b><span>A contract here, or a wallet only its owner can still set up on this chain.</span></li>
-      <li class="st bad"><b>Stop</b><span>Nothing can reach funds sent here: a wallet from another chain, or a token contract.</span></li>
-      <li class="st info"><b>Can't tell</b><span>Never used on any chain checked, or a chain's RPCs did not answer.</span></li>
-    </ul>
-  </section>
-
-  <section class="reads reveal" aria-labelledby="reads-h">
-    <h2 id="reads-h">Reads every one of these chains at once</h2>
-    <p class="muted">Public RPCs only, straight from your browser. No keys, no server.</p>
-    <ul class="chainrow" id="chainrow"></ul>
-  </section>
+  </div>
 
   <footer>
     <p>Open source (MIT): <a href="https://github.com/cryppit/safe-to-send" target="_blank" rel="noopener noreferrer">github.com/cryppit/safe-to-send</a> · by <a href="https://cryppit.near.page/">Cryppit</a></p>
-    <p class="muted">Keyless and read-only: it reads public RPCs and a list of Abstract wallets kept in this site; it never holds keys, connects a wallet or signs anything. A "safe" answer is about whether funds can be reached, not about who the address belongs to: check that yourself. Independent project, not affiliated with Abstract, Safe, or any chain listed. Chain logos: web3icons (MIT). <span id="archive-line"></span></p>
+    <p class="muted">Keyless and read-only. Independent project, not affiliated with Abstract, Safe, or any chain listed. Chain logos: web3icons (MIT).</p>
   </footer>
 </main>
 
-<script type="module">
-  import { check } from "./src/check.js";
-  import { CHAINS, chainName, chainById } from "./src/chains.js";
-
-  const $ = (id) => document.getElementById(id);
-  const el = (tag, attrs = {}, text) => { const e = document.createElement(tag); Object.assign(e, attrs); if (text != null) e.textContent = text; return e; };
-  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const logo = (id, size = 18) => { const c = chainById(id); return c?.logo ? el("img", { className: "lg", src: `logos/${c.logo}.svg`, alt: "", width: size, height: size }) : null; };
-
-  const select = $("chain");
-  for (const c of CHAINS) select.append(el("option", { value: String(c.id) }, c.name));
-  select.value = "56";
-  const syncLogo = () => { const c = chainById(Number(select.value)); if (c?.logo) $("chain-logo").src = `logos/${c.logo}.svg`; };
-  select.addEventListener("change", syncLogo);
-  $("stat-chains").textContent = `${CHAINS.length} chains`;
-  for (const c of CHAINS) {
-    const li = el("li"); li.append(logo(c.id, 26), c.name);
-    if (c.until) li.append(el("small", {}, `until ${new Date(c.until + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}`));
-    $("chainrow").append(li);
-  }
-
-  // Days left before Abstract shuts down (UTC); after that the banner says it is gone and the archive answers alone.
-  const abs = chainById(2741);
-  if (abs?.until) {
-    const days = Math.ceil((Date.parse(abs.until + "T00:00:00Z") - Date.now()) / 86400000);
-    $("countdown").textContent = days > 1 ? `Abstract shuts down in ${days} days` : days === 1 ? "Abstract shuts down tomorrow" : "Abstract has shut down";
-  }
-
-  // The archive: one small file per first byte of the address, fetched only when needed.
-  const loadShard = async (key) => {
-    const r = await fetch(`data/abstract/agw/${key}.bin`);
-    return r.ok ? new Uint8Array(await r.arrayBuffer()) : null;
-  };
-  fetch("data/abstract/manifest.json").then((r) => (r.ok ? r.json() : null)).then((m) => {
-    if (!m) return;
-    $("stat-agw").textContent = `${(m.wallets / 1e6).toFixed(2)}M`;
-    $("stat-agw-dd").textContent = "Abstract wallets archived";
-    $("tag-agw").textContent = `${(m.wallets / 1e6).toFixed(2)}M Abstract wallets`;
-    $("archive-line").textContent = `Abstract wallet archive: ${m.wallets.toLocaleString("en-US")} wallets up to Abstract block ${m.toBlock} (${m.toBlockTime.slice(0, 10)}).`;
-  }).catch(() => {});
-
-  const LABEL = { safe: "Safe", caution: "Caution", stop: "Stop", unknown: "Can't tell" };
-  const chip = (id, c, target) => {
-    const k = c.code == null ? "unread" : c.code === "0x" ? (c.nonce > 0 ? "key" : "none") : /^0xef0100/i.test(c.code) ? "key" : "contract";
-    const what = { unread: "no answer", key: c.code === "0x" ? `key wallet, ${c.nonce} tx` : "EIP-7702", none: "unused", contract: c.safe ? `Safe ${c.safe.threshold}-of-${c.safe.owners}` : c.token ? `${c.token.symbol} token` : "contract" }[k];
-    const li = el("li", { className: `c-${k}${id === target ? " c-target" : ""}`, title: id === target ? "the chain you are sending on" : "" });
-    const img = logo(id, 20); if (img) li.append(img);
-    li.append(`${chainName(id)}: ${what}`);
-    return li;
-  };
-
-  // The route, left to right: what the address is, where it lives, and what happens on the chain you picked.
-  const KIND = { "abstract-wallet": "Abstract wallet", eip7702: "EIP-7702 account", "key-wallet": "Key wallet", "safe-here": "Safe multisig", "safe-elsewhere": "Safe multisig",
-    "token-contract": "Token contract", "contract-here": "Contract", "contract-elsewhere": "Contract", unused: "Never used", unreadable: "Not read" };
-  const END = { safe: ["s-ok", "✓", "Reachable"], caution: ["s-maybe", "!", "Careful"], stop: ["s-lost", "✕", "Lost"], unknown: ["s-unknown", "?", "Can't tell"] };
-  function route(v, f) {
-    const short = `${f.address.slice(0, 6)}…${f.address.slice(-4)}`;
-    const keyed = v.kind === "key-wallet" || v.kind === "eip7702";
-    const homes = v.kind === "abstract-wallet" ? [2741] : Object.entries(f.chains).filter(([, c]) => c.code && c.code !== "0x" && !/^0xef0100/i.test(c.code)).map(([id]) => Number(id));
-    const ol = el("ol", { className: "route" });
-    const node = (cls, dotKids, title, sub, badge, bar) => {
-      const li = el("li", { className: `stop-n ${cls}` });
-      const dot = el("span", { className: "dot" }); dot.setAttribute("aria-hidden", "true"); dot.append(...dotKids);
-      if (badge) dot.append(el("span", { className: "badge" }, badge));
-      li.append(dot, el("b", {}, title), el("small", {}, sub));
-      if (bar) li.append(bar);
-      ol.append(li);
-    };
-    const ico = (name) => el("span", { className: `ico i-${name}` });
-    const bar = (broken) => el("span", { className: `bar${broken ? " broken" : ""}` });
-    const [endCls, endMark, endWord] = END[v.level];
-    const broken = v.level === "stop";
-    const first = bar(false); first.style.setProperty("--c2", "var(--blue)");
-    node("s-plain", [ico(keyed ? "key" : "wallet")], short, KIND[v.kind] ?? "Address", null, first);
-    if (keyed) node("s-ok", [ico("key")], "One key", "works on every chain", "✓", bar(broken));
-    else if (homes.length) node("s-ok", [logo(homes[0], 30)], `Lives on ${chainName(homes[0])}${homes.length > 1 ? ` +${homes.length - 1}` : ""}`, homes.includes(f.target) ? "and here" : "only there", "✓", bar(broken));
-    else node("s-unknown", [ico("wallet")], "Lives nowhere yet", "no code, no history", "?", bar(true));
-    node(endCls, [logo(f.target, 30)], `Sent on ${chainName(f.target)}`, endWord, endMark);
-    ol.setAttribute("aria-label", `${KIND[v.kind] ?? "Address"}; sent on ${chainName(f.target)}: ${endWord}`);
-    return ol;
-  }
-
-  function play(ol, level) {
-    if (still || typeof ol.animate !== "function") return;
-    let t = 0;
-    for (const li of ol.children) {
-      const dot = li.querySelector(".dot"), bar = li.querySelector(".bar");
-      dot.animate([{ opacity: 0.15, transform: "scale(0.6)" }, { opacity: 1, transform: "scale(1.15)", offset: 0.6 }, { opacity: 1, transform: "scale(1)" }], { duration: 380, delay: t, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "backwards" });
-      for (const x of li.querySelectorAll("b, small")) x.animate([{ opacity: 0.15 }, { opacity: 1 }], { duration: 300, delay: t + 80, fill: "backwards" });
-      if (bar) bar.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 360, delay: t + 220, easing: "ease-in-out", fill: "backwards" });
-      t += 460;
-    }
-    const end = ol.lastElementChild.querySelector(".dot");
-    if (level === "stop") end.animate([{ transform: "translateX(0)" }, { transform: "translateX(-5px)" }, { transform: "translateX(5px)" }, { transform: "translateX(-3px)" }, { transform: "translateX(0)" }], { duration: 420, delay: t });
-    const ring = { stop: "255,107,107", safe: "221,242,74", caution: "255,181,71", unknown: "143,180,255" }[level];
-    end.animate([{ boxShadow: `0 0 0 0 rgba(${ring},0.65)` }, { boxShadow: `0 0 0 16px rgba(${ring},0)` }], { duration: 900, delay: t, iterations: 3, easing: "ease-out" });
-  }
-
-  function render(r) {
-    const out = $("out");
-    out.replaceChildren();
-    if (r.error) { out.append(el("div", { className: "card err" }, r.message)); return; }
-    const v = r.verdict, f = r.facts;
-    const card = el("article", { className: `card ${v.level}` });
-    const head = el("header");
-    head.append(el("span", { className: `pill l-${v.level}` }, LABEL[v.level]), el("span", { className: "addr" }, `${f.address} on ${chainName(f.target)}`));
-    const steps = route(v, f);
-    card.append(head, steps, el("p", { className: "title" }, v.title));
-    const ul = el("ul", { className: "reasons" });
-    for (const reason of v.reasons) ul.append(el("li", {}, reason));
-    card.append(ul);
-    const seen = Object.entries(f.chains).map(([id, c]) => [Number(id), c]).filter(([id, c]) => id === f.target || c.code == null || c.code !== "0x" || c.nonce > 0);
-    card.append(el("p", { className: "hint" }, "What each chain says about this address (only chains where it was seen, plus the one you picked):"));
-    const chains = el("ul", { className: "chains" });
-    for (const [id, c] of seen) chains.append(chip(id, c, f.target));
-    card.append(chains);
-    if (f.abstractWallet) card.append(el("p", { className: "foot" }, f.abstractSource === "archive" ? "Found in the archive of Abstract wallets." : "Confirmed by Abstract's wallet registry."));
-    card.append(el("p", { className: "foot" }, `Read from public RPCs on ${Object.keys(f.chains).length} chains, at the latest block. Nothing was signed.`));
-    out.append(card);
-    play(steps, v.level);
-    if (!still) for (const [i, li] of [...chains.children].entries()) li.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 300, delay: 1400 + i * 70, fill: "backwards" });
-  }
-
-  function reading() {
-    const p = el("div", { className: "card reading" });
-    const orbit = el("span", { className: "orbit" });
-    for (const id of [1, 56, 8453, 42161, 2741]) orbit.append(logo(id, 20));
-    const text = el("div");
-    text.append(el("b", {}, "Reading the chain…"), el("span", { className: "ld-detail" }, `The address on ${CHAINS.length} chains: is it a contract, a wallet with its own key, or nothing yet.`));
-    const bar = el("span", { className: "ld-bar" });
-    bar.setAttribute("aria-hidden", "true");
-    p.setAttribute("role", "status");
-    p.append(orbit, text, bar);
-    $("out").replaceChildren(p);
-  }
-
-  async function run(address, chainId) {
-    const go = $("go");
-    go.disabled = true; go.textContent = `Reading ${CHAINS.length} chains…`;
-    reading();
-    $("out").scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
-    try { render(await check(address.trim(), Number(chainId), { loadShard })); }
-    catch (e) { render({ error: "failed", message: `Something went wrong: ${e.message}` }); }
-    finally { go.disabled = false; go.textContent = "Check address →"; }
-  }
-
-  $("f").addEventListener("submit", (e) => { e.preventDefault(); run($("addr").value, select.value); });
-  for (const b of document.querySelectorAll("button[data-a]")) {
-    b.addEventListener("click", () => { $("addr").value = b.dataset.a; select.value = b.dataset.c; syncLogo(); run(b.dataset.a, b.dataset.c); });
-  }
-
-  // The real result beside "How a check works": the Abstract wallet sent on BNB Chain, played when it comes into view.
-  const example = route({ level: "stop", kind: "abstract-wallet" }, { address: "0xd8b17dbd34391993ee11b501e6275bbc715e2529", target: 56, chains: {} });
-  $("example").append(example);
-  new IntersectionObserver((entries, observer) => {
-    if (!entries.some((e) => e.isIntersecting)) return;
-    observer.disconnect();
-    play(example, "stop");
-  }, { threshold: 0.5 }).observe(example);
-
-  // Sections rise in as they come into view.
-  const io = new IntersectionObserver((entries) => { for (const e of entries) if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }, { threshold: 0.12 });
-  for (const s of document.querySelectorAll(".reveal")) io.observe(s);
-
-  // A link can carry the check: ?address=0x…&chain=56
-  const q = new URLSearchParams(location.search);
-  if (q.get("address")) { $("addr").value = q.get("address"); if (q.get("chain")) select.value = q.get("chain"); syncLogo(); run($("addr").value, select.value); }
-</script>
+<script type="module" src="src/page.js"></script>
 </body>
 </html>

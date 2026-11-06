@@ -63,7 +63,8 @@ test("a 3-of-5 Safe created on Ethereum only, sending on BNB Chain: stop, with t
   const r = await replay("safe-eth-only-on-bnb");
   assert.equal(r.verdict.level, "stop");
   assert.equal(r.verdict.kind, "safe-elsewhere");
-  assert.deepEqual(r.facts.chains[1].safe, { threshold: 3, owners: 5 });
+  assert.equal(r.facts.chains[1].safe.threshold, 3);
+  assert.equal(r.facts.chains[1].safe.signers.length, 5);
 });
 
 test("the USDC contract itself on Ethereum: stop, it is the token's own contract", async () => {
@@ -87,4 +88,18 @@ test("a malformed address is refused before any RPC call", async () => {
 test("an unknown chain is refused", async () => {
   const r = await check(AGW, 12345, { clients: () => { throw new Error("no RPC expected"); }, loadShard });
   assert.equal(r.error, "bad-chain");
+});
+
+test("a Safe's owners are read, not just counted", async () => {
+  const word = (hex) => hex.padStart(64, "0");
+  const a = "aa".repeat(20), b = "bb".repeat(20);
+  const client = () => async (method, params) => {
+    if (method === "eth_getCode") return "0x6080";
+    if (method === "eth_getTransactionCount") return "0x1";
+    if (params[0].data === "0xe75235b8") return "0x" + word("2");
+    if (params[0].data === "0xa0e67e2b") return "0x" + word("20") + word("2") + word(a) + word(b);
+    return "0x";
+  };
+  const r = await check("0x" + "11".repeat(20), 1, { clients: client, chains: [{ id: 1, name: "Ethereum" }] });
+  assert.deepEqual(r.facts.chains[1].safe, { threshold: 2, owners: 2, signers: ["0x" + a, "0x" + b] });
 });

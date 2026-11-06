@@ -23,6 +23,7 @@ jobs:
           mkdir -p _site/data/abstract
           cp -r index.html og.png src icons logos art _site/
           cp -r data/abstract/agw data/abstract/manifest.json _site/data/abstract/
+          cp -r data/lists _site/data/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

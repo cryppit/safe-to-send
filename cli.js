@@ -1,17 +1,21 @@
 #!/usr/bin/env node
-// Usage: node cli.js <address> --chain <chain id or name> [--json]
-// Checks, from public RPCs only, whether funds sent to <address> on that chain can be reached. Nothing is signed.
+// Usage: node cli.js <address or ENS name> --chain <chain id or name> [--json]
+// On an EVM chain it checks, from public RPCs only, whether funds sent to the address can be reached.
+// On any other network it checks the address format only. Nothing is signed.
 import { readFileSync, existsSync } from "node:fs";
-import { check } from "./src/check.js";
-import { CHAINS, chainName } from "./src/chains.js";
+import { lookup } from "./src/lookup.js";
+import { parseLists } from "./src/lists.js";
+import { CHAINS, NETWORKS, chainName } from "./src/chains.js";
 
 const args = process.argv.slice(2);
 const flag = (name) => { const i = args.indexOf(`--${name}`); return i >= 0 ? args[i + 1] : undefined; };
-const address = args.find((a) => a.startsWith("0x"));
+const squash = (x) => x?.toLowerCase().replace(/\s+/g, "");
+const flagged = new Set(args.flatMap((a, i) => (a === "--chain" ? [i, i + 1] : a === "--json" ? [i] : [])));
+const address = args.find((_, i) => !flagged.has(i));
 const chainArg = flag("chain");
-const chain = CHAINS.find((c) => String(c.id) === chainArg || c.name.toLowerCase().replace(/\s+/g, "") === chainArg?.toLowerCase().replace(/\s+/g, ""));
-if (!address || !chain) {
-  console.error(`Usage: node cli.js <address> --chain <id or name> [--json]\nChains: ${CHAINS.map((c) => `${c.id} ${c.name}`).join(", ")}`);
+const target = [...CHAINS, ...NETWORKS].find((c) => String(c.id) === chainArg || squash(c.name) === squash(chainArg));
+if (!address || !target) {
+  console.error(`Usage: node cli.js <address or ENS name> --chain <id or name> [--json]\nRead live: ${CHAINS.map((c) => `${c.id} ${c.name}`).join(", ")}\nFormat only: ${NETWORKS.map((n) => n.id).join(", ")}`);
   process.exit(2);
 }
 
@@ -21,7 +25,9 @@ const loadShard = async (key) => {
   return existsSync(f) ? new Uint8Array(readFileSync(f)) : null;
 };
 
-const r = await check(address, chain.id, { loadShard });
+const listFile = (n) => JSON.parse(readFileSync(new URL(`./data/lists/${n}.json`, import.meta.url)));
+const lists = async () => parseLists(listFile("ofac"), listFile("exchanges"));
+const r = await lookup(address, target.id, { loadShard, lists });
 if (r.error) {
   console.error(r.message);
   process.exit(1);
@@ -30,10 +36,17 @@ if (args.includes("--json")) {
   console.log(JSON.stringify(r, null, 2));
   process.exit(0);
 }
-const mark = { safe: "SAFE", caution: "CAUTION", stop: "STOP", unknown: "CAN'T TELL" }[r.verdict.level];
-console.log(`${r.facts.address} on ${chain.name}\n`);
+const mark = { safe: "SAFE", caution: "CAUTION", stop: "STOP", unknown: "CAN'T TELL", format: "FORMAT OK" }[r.verdict.level];
+if (r.ens) console.log(`${r.ens.name} points to ${r.ens.address} on Ethereum`);
+console.log(`${r.facts?.address ?? r.address} on ${target.name}\n`);
 console.log(`${mark}  ${r.verdict.title}`);
 for (const reason of r.verdict.reasons) console.log(`  - ${reason}`);
+for (const notice of r.notices ?? []) console.log(`\n  NOTE ${notice}`);
+if (r.scope === "format") {
+  if (r.suggest !== undefined) console.log(`\n  try: --chain ${r.suggest}`);
+  console.log(r.read ? `\nRead from the ${r.read}. Nothing was signed.` : "\nNo chain was read. Nothing was signed.");
+  process.exit(0);
+}
 const seen = Object.entries(r.facts.chains)
   .filter(([, c]) => c.code && (c.code !== "0x" || c.nonce > 0))
   .map(([id, c]) => `${chainName(Number(id))} (${c.code === "0x" ? `key, ${c.nonce} tx` : /^0xef0100/.test(c.code) ? "EIP-7702" : c.safe ? `Safe ${c.safe.threshold}-of-${c.safe.owners}` : "contract"})`);

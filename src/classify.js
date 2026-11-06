@@ -19,6 +19,15 @@ export function kindOfCode(code) {
 }
 
 const list = (ids) => ids.map(name).join(", ");
+const EXCHANGE = "If this is an exchange deposit address, also check that the exchange accepts this network and token. An exchange can hold the key and still not credit you.";
+
+/** The same owners and the same threshold, in any order. Older facts carry only the counts. */
+function sameSafe(a, b) {
+  if (a.threshold !== b.threshold || a.owners !== b.owners) return false;
+  if (!a.signers || !b.signers) return true;
+  const key = (s) => [...s.signers].map((x) => x.toLowerCase()).sort().join();
+  return key(a) === key(b);
+}
 
 export function classify(f) {
   const t = f.target;
@@ -68,6 +77,19 @@ export function classify(f) {
   }
   if (k === "contract") {
     if (here.safe) {
+      const differ = others.filter(([, c]) => c.safe && !sameSafe(c.safe, here.safe));
+      if (differ.length) {
+        const [[first, c], ...rest] = differ;
+        const also = rest.length ? `, and it has different owners on ${list(rest.map(([id]) => id))} too` : "";
+        return out({
+          level: "caution", kind: "safe-differs", recovery: "maybe", title: `Caution: this Safe has different owners on other chains`,
+          reasons: [
+            `It is a ${here.safe.threshold}-of-${here.safe.owners} Safe on ${name(t)}, but a ${c.safe.threshold}-of-${c.safe.owners} Safe on ${name(first)}${also}.`,
+            `The same address can belong to different people on different chains. Funds sent here go to the owners on ${name(t)}.`,
+            `Check with the recipient that they control this Safe on ${name(t)}.`,
+          ],
+        });
+      }
       return out({
         level: "safe", kind: "safe-here", recovery: "owner", title: `Safe: a Safe multisig deployed on ${name(t)}`,
         reasons: [`It is a ${here.safe.threshold}-of-${here.safe.owners} Safe on ${name(t)}; its owners can move what it receives.`],
@@ -89,14 +111,14 @@ export function classify(f) {
   if (here.nonce > 0) {
     return out({
       level: "safe", kind: "key-wallet", recovery: "owner", title: "Safe: a normal key wallet",
-      reasons: [`It has sent ${here.nonce} transactions on ${name(t)}, so someone holds its private key, and that key works on every EVM chain.`],
+      reasons: [`It has sent ${here.nonce} transaction${here.nonce === 1 ? "" : "s"} on ${name(t)}, so someone holds its private key, and that key works on every EVM chain.`, EXCHANGE],
     });
   }
   const used = others.filter(([, c]) => kindOfCode(c.code) === "none" && c.nonce > 0).map(([id]) => id);
   if (used.length) {
     return out({
       level: "safe", kind: "key-wallet", recovery: "owner", title: "Safe: a normal key wallet",
-      reasons: [`It has sent transactions on ${list(used)}, so someone holds its private key, and the same key controls it on ${name(t)}.`],
+      reasons: [`It has sent transactions on ${list(used)}, so someone holds its private key, and the same key controls it on ${name(t)}.`, EXCHANGE],
     });
   }
   const delegated = others.filter(([, c]) => kindOfCode(c.code) === "eip7702").map(([id]) => id);

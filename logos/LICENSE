@@ -1,4 +1,4 @@
-Chain logos in this folder: SVGs from @web3icons/core 4.0.58 (dist/svgs/networks/branded), unmodified.
+Chain logos in this folder: SVGs from @web3icons/core 4.0.58 (dist/svgs/networks/branded and tokens/branded), the artwork unmodified; files that shipped wrapped in a JS string were unwrapped to plain SVG.
 https://github.com/0xa3k5/web3icons
 
 MIT License
