@@ -1,6 +1,6 @@
 # Safe to Send?
 
-Paste any address, or an ENS name, and pick the chain you are about to send on. On 33 EVM chains it tells you, from
+Paste any address, or an ENS name, and pick the chain you are about to send on. On 34 EVM chains it tells you, from
 public RPCs only, whether funds sent to that address on that chain can be reached, before you send. The same answer
 tells you, after a mistake, whether funds already sent there can be recovered and by whom.
 
@@ -49,7 +49,7 @@ The page (`index.html`) does the same in the browser; `?address=0x…&chain=56` 
 ## How it decides
 
 First it recognises the address: its format, and its checksum where it has one. A mixed-case `0x` address that fails
-EIP-55 stops here, and so does an address from another network. For a good EVM address it reads, at the latest block of each of 33 chains: `eth_getCode` and `eth_getTransactionCount`. For a
+EIP-55 stops here, and so does an address from another network. For a good EVM address it reads, at the latest block of each of 34 chains: `eth_getCode` and `eth_getTransactionCount`. For a
 contract it also asks `getThreshold()` and `getOwners()` (a Safe), and on the chain you picked `symbol()` and
 `decimals()` (a token's own contract). It looks the address up in the archive of Abstract Global Wallets, and while
 Abstract runs it also asks Abstract's AGW registry (`isAGW`).
