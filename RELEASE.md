@@ -3,6 +3,17 @@
 Everything here is run by the founder. Claude never publishes, deploys, or pushes. Before any release:
 `node --test` green, `npm run conformance` 21/21, `node scripts/verify-archive.mjs data/abstract` OK.
 
+## 0. First, and un-skippable: rate-limit the hosted API
+
+The hosted Worker has **no built-in rate limit**. Deploying it (§2) without one exposes a public endpoint anyone can
+hammer — running up your Cloudflare bill and getting your server IP throttled by the upstream RPCs. This is an
+abuse/cost risk to Cryppit (never a safety or privacy risk to users), and it is the one step that must not be skipped.
+
+**Before the endpoint is announced or linked**, add a **zone WAF rate-limiting rule** on the API route in the
+Cloudflare dashboard (e.g. **60 req / min / IP**). The Workers rate-limit *binding* alone is approximate (it can leak
+several times the configured limit), so the WAF rule is the real cap. Verify the route returns **HTTP 429** past the
+limit before going public.
+
 ## 1. Library — npm, via Trusted Publishing (no token)
 
 Configure a **Trusted Publisher** for `@cryppit/safe-to-send` on npmjs.com (Settings → Trusted Publishing), pointing
@@ -24,9 +35,8 @@ was built, not that the code is safe** — keep 2FA/passkeys on the npm account.
 npx wrangler deploy          # deploys worker/index.js (see wrangler.jsonc)
 ```
 
-Then in the Cloudflare dashboard add a **zone WAF rate-limiting rule** for the API route (e.g. 60 req/min/IP). The
-Workers rate-limit binding alone is approximate (it can leak several times the limit), so the WAF rule is the real
-cap. No KV/Durable Objects are used — the "no storage" promise holds. Confirm `/.well-known/security.txt` resolves.
+**Do not announce or link the endpoint until the §0 rate limit is live** — `wrangler deploy` exposes it publicly.
+No KV/Durable Objects are used — the "no storage" promise holds. Confirm `/.well-known/security.txt` resolves.
 
 ## 3. Archive mirrors — GitHub + R2 + Arweave
 
