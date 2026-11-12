@@ -473,6 +473,7 @@ await checkAddress(addr, "bnb");</pre>
         <a href="#answers">The five answers</a>
         <a href="#why">What it catches</a>
         <a href="#limits">What it can't tell you</a>
+        <a href="#tested">How it's tested</a>
         <a href="#sent">Already sent it?</a>
         <a href="#exchanges">Exchanges</a>
         <a href="#privacy">Your privacy</a>
@@ -537,6 +538,11 @@ await checkAddress(addr, "bnb");</pre>
             <li><b>Whether an exchange will credit you.</b> It doesn't recognise exchange deposit addresses, or know which networks and tokens an exchange accepts. <a href="#exchanges">More on exchanges</a></li>
             <li><b>The future.</b> An answer is true for the moment it was read. Contracts and owners can change.</li>
           </ul>
+        </section>
+
+        <section class="sec" id="tested">
+          <h2>How it's tested</h2>
+          <p>Every answer comes from the same code, checked against a fixed set of real addresses — a known Abstract wallet, a normal wallet, token contracts, a mistyped one — one for each kind of answer, across every chain. That set runs on every change, and the <a href="conformance/">public conformance board</a> shows the current pass/fail. If a change ever made the tool answer one of these wrong, the board would show it.</p>
         </section>
 
         <section class="sec" id="sent">
