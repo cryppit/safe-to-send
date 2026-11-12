@@ -30,6 +30,7 @@ jobs:
           cp -r data/abstract/agw data/abstract/manifest.json _site/data/abstract/
           cp -r data/lists _site/data/
           cp -r conformance/index.html conformance/vectors.json _site/conformance/
+          cp -r public/.well-known _site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

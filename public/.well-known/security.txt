@@ -1,0 +1,6 @@
+Contact: https://github.com/cryppit/safe-to-send/security/advisories/new
+Contact: mailto:security@cryppit.com
+Expires: 2027-11-12T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://cryppit.github.io/safe-to-send/.well-known/security.txt
+Policy: https://github.com/cryppit/safe-to-send/blob/main/SECURITY.md
