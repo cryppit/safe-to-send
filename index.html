@@ -73,6 +73,20 @@
   .learn { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 18px; margin-top: 24px; padding: 18px 20px; border-radius: 16px; border: 1px solid rgba(221, 242, 74, 0.3); background: rgba(221, 242, 74, 0.05); color: var(--ink); text-decoration: none; }
   .learn:hover { border-color: var(--lime); }
   .learn-go { color: var(--lime); font-weight: 700; white-space: nowrap; }
+  /* M1: developer surface */
+  .dev { margin-top: 24px; padding: 22px; border-radius: 20px; background: var(--glass); border: 1px solid var(--line); scroll-margin-top: 80px; }
+  .dev .kick { color: var(--cyan); font-weight: 700; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; margin: 0; }
+  .dev h2 { font-size: 20px; margin: 6px 0 4px; }
+  .dev .lede { color: var(--mute); font-size: 13.5px; margin: 0 0 4px; max-width: 70ch; }
+  .dev-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+  .dev-card { padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(4, 6, 26, 0.5); }
+  .dev-card b { font-size: 13.5px; }
+  .dev-card p { color: var(--mute); font-size: 12px; margin: 4px 0 10px; }
+  .dev-card pre { margin: 0; padding: 10px 12px; border-radius: 10px; background: var(--deep); border: 1px solid var(--line); font: 12px/1.5 var(--mono); color: var(--ink); overflow-x: auto; white-space: pre; }
+  .dev-links { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 16px 0 0; padding: 0; list-style: none; font-size: 13.5px; }
+  .dev-links a { color: var(--lime); font-weight: 650; text-decoration: none; }
+  .dev-links a:hover { text-decoration: underline; }
+  @media (max-width: 760px) { .dev-grid { grid-template-columns: 1fr; } }
 
   .panel { position: relative; z-index: 8; padding: 22px; border-radius: 20px; background: var(--glass); border: 1px solid var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 30px 80px -40px rgba(42, 59, 214, 0.6); scroll-margin-top: 80px; }
     .panel form { display: grid; gap: 10px; }
@@ -349,6 +363,7 @@
 <nav class="top" aria-label="Site">
   <a class="brand" href="#top"><img src="icons/favicon.svg" alt="" width="30" height="30"><span>Safe to Send?</span></a>
   <span class="tabs"><a class="tab" id="tab-check" href="#top">Check</a><a class="tab" id="tab-explained" href="#explained">Explained</a></span>
+  <a class="gh" href="#developers">Developers</a>
   <a class="gh" href="https://github.com/cryppit/safe-to-send" target="_blank" rel="noopener noreferrer">GitHub</a>
 </nav>
 
@@ -408,6 +423,40 @@
     </dl>
 
     <a class="learn" href="#explained"><span><b>New to this?</b> See what every answer means, and what this tool can't do.</span><span class="learn-go">Read it explained →</span></a>
+
+    <section class="dev" id="developers">
+      <p class="kick">For wallets &amp; developers</p>
+      <h2>Add the same check to your product</h2>
+      <p class="lede">Keyless, read-only, MIT. A zero-dependency library and a free hosted API return the same verdict you see above — no keys, nothing signed.</p>
+      <div class="dev-grid">
+        <div class="dev-card">
+          <b>Library</b>
+          <p>Node 22+, ESM, zero dependencies.</p>
+          <pre>npm install @cryppit/safe-to-send
+
+import { checkAddress } from
+  "@cryppit/safe-to-send";
+await checkAddress(addr, "bnb");</pre>
+        </div>
+        <div class="dev-card">
+          <b>Hosted API</b>
+          <p>One GET. CORS open. No storage, no logs.</p>
+          <pre>GET /v1/check?address=0x…&amp;chain=56
+→ { "verdict": { "level": "stop" } }</pre>
+        </div>
+        <div class="dev-card">
+          <b>Conformance in CI</b>
+          <p>Prove your integration on real vectors.</p>
+          <pre>npm run conformance
+# 21/21 · all 10 grant chains</pre>
+        </div>
+      </div>
+      <ul class="dev-links">
+        <li><a href="conformance/">See the conformance board →</a></li>
+        <li><a href="https://github.com/cryppit/safe-to-send#readme" target="_blank" rel="noopener noreferrer">Library &amp; API docs →</a></li>
+        <li><a href="https://github.com/cryppit/safe-to-send/tree/main/worker" target="_blank" rel="noopener noreferrer">Self-host the API →</a></li>
+      </ul>
+    </section>
   </div>
 
   <div id="view-explained" hidden>
@@ -559,6 +608,7 @@
   <footer>
     <p>Already sent to a smart wallet on the wrong chain? <a href="https://cryppit.github.io/recovery-checker/" target="_blank" rel="noopener noreferrer">Check if it's recoverable →</a></p>
     <p>Open source (MIT): <a href="https://github.com/cryppit/safe-to-send" target="_blank" rel="noopener noreferrer">github.com/cryppit/safe-to-send</a> · by <a href="https://cryppit.near.page/">Cryppit</a></p>
+    <p>For developers: <a href="conformance/">conformance board</a> · <code>npm i @cryppit/safe-to-send</code> · free hosted API · <a href="https://github.com/cryppit/safe-to-send#readme" target="_blank" rel="noopener noreferrer">docs →</a></p>
     <p class="muted">Keyless and read-only. Independent project, not affiliated with Abstract, Safe, or any chain listed. Chain logos: web3icons (MIT).</p>
   </footer>
 </main>
