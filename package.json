@@ -1,13 +1,22 @@
 {
-  "name": "safe-to-send",
-  "version": "0.1.0",
+  "name": "@cryppit/safe-to-send",
+  "version": "1.0.0",
   "description": "Paste an address and a chain: see whether funds sent there can be reached, before you send. Read-only, keyless.",
   "type": "module",
   "license": "MIT",
+  "homepage": "https://cryppit.github.io/safe-to-send/",
+  "repository": { "type": "git", "url": "git+https://github.com/cryppit/safe-to-send.git" },
   "engines": { "node": ">=22" },
+  "exports": {
+    ".": { "default": "./src/index.js" },
+    "./chains": "./src/chains.js"
+  },
+  "bin": { "safe-to-send": "./cli.js" },
+  "files": ["src/", "cli.js", "data/abstract/manifest.json", "data/lists/", "README.md", "LICENSE", "SECURITY.md"],
   "scripts": {
     "test": "node --test \"test/*.test.js\"",
     "archive:abstract": "node scripts/archive-abstract.mjs",
-    "verify:abstract": "node scripts/verify-abstract.mjs"
+    "verify:abstract": "node scripts/verify-abstract.mjs",
+    "verify:archive": "node scripts/verify-archive.mjs data/abstract"
   }
 }

@@ -1,26 +1,19 @@
 # Security Policy
 
-Cryppit builds keyless, read-only safety tools. We take security seriously and
-welcome responsible disclosure.
+Safe to Send is a keyless, read-only tool: it never holds keys, signs, sends, or custodies funds. It reads public
+RPCs and public ledgers only.
 
 ## Reporting a vulnerability
 
-Please report security issues **privately**, not in a public issue:
+Please report privately — do not open a public issue or PR for a security bug.
 
-- **Preferred:** open a private report with GitHub's *"Report a vulnerability"*
-  button on the **Security** tab of this repository.
-- **Or:** reach the maintainer on Telegram — **@Anirudhtumuluru**.
+- Preferred: GitHub **private vulnerability reporting** on this repository (Security → Report a vulnerability).
+- Or email the maintainer (see `.well-known/security.txt` on the site).
 
-Please include what you found, the steps to reproduce it, and the impact. We aim
-to acknowledge within 72 hours and to keep you updated through to a fix.
+We aim to acknowledge within 1–2 working days and to coordinate a fix and disclosure. We follow coordinated
+disclosure with a default window of up to 90 days, negotiable by severity. We will credit reporters who want it.
 
 ## Scope
 
-This is a keyless, read-only tool: it holds no keys, no funds and no user
-accounts. Reports about loss of funds, an incorrect safety verdict, or data that
-could mislead a user are especially welcome.
-
-## Our commitments
-
-- We never ask for a seed phrase, private key or OTP, and refuse them if sent.
-- We disclose responsibly and credit reporters who want credit.
+In scope: the library, the hosted API, the conformance suite, and the archive verifier. Out of scope: third-party
+RPC providers and ledgers we read, and anything that requires a key or signing (this tool has none).
