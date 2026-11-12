@@ -1,0 +1,22 @@
+name: publish
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: node --test 'test/*.test.js'
+      - run: node scripts/conformance.mjs
+      - run: node scripts/verify-archive.mjs data/abstract
+      - run: npm publish --access public
