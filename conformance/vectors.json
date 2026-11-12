@@ -1,0 +1,170 @@
+[
+ {
+  "id": "agw-on-arbitrum",
+  "input": "0xd8b17dbd34391993ee11b501e6275bbc715e2529",
+  "chain": 42161,
+  "expect": "stop",
+  "why": "AGW on Arbitrum One (grant chain): unreachable smart wallet",
+  "recorded": "agw-on-arbitrum.json"
+ },
+ {
+  "id": "agw-on-bnb",
+  "input": "0xd8b17dbd34391993ee11b501e6275bbc715e2529",
+  "chain": 56,
+  "expect": "stop",
+  "why": "AGW on BNB Chain: the real ~$20k loss case; unreachable, lost for good",
+  "recorded": "agw-on-bnb.json"
+ },
+ {
+  "id": "agw-on-zksync",
+  "input": "0xd8b17dbd34391993ee11b501e6275bbc715e2529",
+  "chain": 324,
+  "expect": "caution",
+  "why": "AGW on ZKsync Era: shares Abstract's factory, owner can most likely recreate it",
+  "recorded": "agw-on-zksync.json"
+ },
+ {
+  "id": "badchecksum-on-ethereum",
+  "input": "0xd8dA6BF26964aF9D7eEd9e03E53415D37AA96045",
+  "chain": 1,
+  "expect": "stop",
+  "why": "an address that fails the EIP-55 checksum: a typo, stop",
+  "recorded": "badchecksum-on-ethereum.json"
+ },
+ {
+  "id": "eip7702-on-base",
+  "input": "0x4de23f3f0fb3318287378adbde030cf61714b2f3",
+  "chain": 8453,
+  "expect": "safe",
+  "why": "EIP-7702 delegated EOA on Base: still a key wallet, safe",
+  "recorded": "eip7702-on-base.json"
+ },
+ {
+  "id": "key-wallet-on-bnb",
+  "input": "0x28C6c06298d514Db089934071355E5743bf21d60",
+  "chain": 56,
+  "expect": "safe",
+  "why": "plain key wallet with history on BNB: safe",
+  "recorded": "key-wallet-on-bnb.json"
+ },
+ {
+  "id": "safe-eoa-on-op",
+  "input": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+  "chain": 10,
+  "expect": "safe",
+  "why": "a key wallet (EIP-7702) on OP Mainnet: safe",
+  "recorded": "safe-eoa-on-op.json"
+ },
+ {
+  "id": "safe-eth-only-on-bnb",
+  "input": "0x1d31f4bdc557bca4df3d238f089cecb3b7135fda",
+  "chain": 56,
+  "expect": "stop",
+  "why": "a Safe that exists only on another chain: stop",
+  "recorded": "safe-eth-only-on-bnb.json"
+ },
+ {
+  "id": "stellar-exchange-memo",
+  "input": "GA5XIGA5C7QTPTWXQHY6MCJRMTRZDOSHR6EFIBNDQTCQHG262N4GGKTM",
+  "chain": "stellar",
+  "expect": "format",
+  "why": "a Stellar account, format valid (no memo flag set at record time)",
+  "recorded": "stellar-exchange-memo.json"
+ },
+ {
+  "id": "unused-on-bnb",
+  "input": "0x91ced670bc23ee850c70311f55f01520c9ca6ef9",
+  "chain": 56,
+  "expect": "unknown",
+  "why": "never used on any chain checked: can't tell",
+  "recorded": "unused-on-bnb.json"
+ },
+ {
+  "id": "unused-on-robinhood",
+  "input": "0x7f3a9c2e5b1d8460af2e9c7b35d10e4f6a8b2c91",
+  "chain": 4663,
+  "expect": "unknown",
+  "why": "unused address on Robinhood Chain: can't tell",
+  "recorded": "unused-on-robinhood.json"
+ },
+ {
+  "id": "usdc-contract-on-arbitrum",
+  "input": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+  "chain": 42161,
+  "expect": "stop",
+  "why": "USDC token contract on Arbitrum One: stop",
+  "recorded": "usdc-contract-on-arbitrum.json"
+ },
+ {
+  "id": "usdc-contract-on-celo",
+  "input": "0xcebA9300f2b948710d2653dD7B07f33A8B32118C",
+  "chain": 42220,
+  "expect": "stop",
+  "why": "USDC token contract on Celo: stop",
+  "recorded": "usdc-contract-on-celo.json"
+ },
+ {
+  "id": "usdc-contract-on-ethereum",
+  "input": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  "chain": 1,
+  "expect": "stop",
+  "why": "USDC token contract on Ethereum: funds sent here usually stick",
+  "recorded": "usdc-contract-on-ethereum.json"
+ },
+ {
+  "id": "usdc-contract-on-linea",
+  "input": "0x176211869cA2b568f2A7D4EE941E073a821EE1ff",
+  "chain": 59144,
+  "expect": "stop",
+  "why": "USDC token contract on Linea: stop",
+  "recorded": "usdc-contract-on-linea.json"
+ },
+ {
+  "id": "usdc-contract-on-mantle",
+  "input": "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9",
+  "chain": 5000,
+  "expect": "stop",
+  "why": "USDC token contract on Mantle: stop",
+  "recorded": "usdc-contract-on-mantle.json"
+ },
+ {
+  "id": "usdc-contract-on-op",
+  "input": "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
+  "chain": 10,
+  "expect": "stop",
+  "why": "USDC token contract on OP Mainnet: stop",
+  "recorded": "usdc-contract-on-op.json"
+ },
+ {
+  "id": "vitalik-7702-on-bnb",
+  "input": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+  "chain": 56,
+  "expect": "safe",
+  "why": "well-known EIP-7702 account on BNB: safe",
+  "recorded": "vitalik-7702-on-bnb.json"
+ },
+ {
+  "id": "weth-contract-on-ink",
+  "input": "0x4200000000000000000000000000000000000006",
+  "chain": 57073,
+  "expect": "stop",
+  "why": "WETH token contract on Ink: stop",
+  "recorded": "weth-contract-on-ink.json"
+ },
+ {
+  "id": "wrongnetwork-btc-on-base",
+  "input": "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq",
+  "chain": 8453,
+  "expect": "stop",
+  "why": "a Bitcoin address pasted on Base: wrong network, stop",
+  "recorded": "wrongnetwork-btc-on-base.json"
+ },
+ {
+  "id": "xrp-exchange-tag",
+  "input": "rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh",
+  "chain": "xrp",
+  "expect": "caution",
+  "why": "an XRP account that requires a destination tag: caution",
+  "recorded": "xrp-exchange-tag.json"
+ }
+]

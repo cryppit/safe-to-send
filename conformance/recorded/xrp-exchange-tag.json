@@ -1,0 +1,11 @@
+{
+ "recordedAt": "2026-11-12T07:01:52.911Z",
+ "store": {},
+ "fetch": {
+  "https://xrplcluster.com\n{\"method\":\"account_info\",\"params\":[{\"account\":\"rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh\",\"ledger_index\":\"validated\"}]}": {
+   "status": 200,
+   "body": "{\"result\":{\"account_data\":{\"Account\":\"rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh\",\"Balance\":\"1497239264\",\"Flags\":131072,\"LedgerEntryType\":\"AccountRoot\",\"OwnerCount\":0,\"PreviousTxnID\":\"100B1348EF59CB26759D9C42EA83D8CA826D625F8A0D0D77FEC9C0487CEAAE10\",\"PreviousTxnLgrSeq\":108205466,\"Sequence\":568925,\"index\":\"E50C9EE857E177CE38071B8930F66053C9C86DF9B8ADEDA632CB9DFF50EC0033\"},\"account_flags\":{\"allowTrustLineClawback\":false,\"allowTrustLineLocking\":false,\"defaultRipple\":false,\"depositAuth\":false,\"disableMasterKey\":false,\"disallowIncomingCheck\":false,\"disallowIncomingNFTokenOffer\":false,\"disallowIncomingPayChan\":false,\"disallowIncomingTrustline\":false,\"disallowIncomingXRP\":false,\"globalFreeze\":false,\"noFreeze\":false,\"passwordSpent\":false,\"requireAuthorization\":false,\"requireDestinationTag\":true},\"ledger_hash\":\"A91880740F7687AC631EADBCF31240F9F768DC8DA5C3AA164CD367830D10C14C\",\"ledger_index\":108277101,\"validated\":true,\"status\":\"success\"}}"
+  }
+ },
+ "agwArchive": []
+}

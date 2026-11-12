@@ -1,0 +1,134 @@
+{
+ "recordedAt": "2026-11-12T07:02:31.467Z",
+ "store": {
+  "1": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0xef01005a7fc11397e9a8ad41bf10bf13f22b0a63f96f6d",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x1752"
+  },
+  "10": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0xef01005a7fc11397e9a8ad41bf10bf13f22b0a63f96f6d",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x28"
+  },
+  "25": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "56": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0xef01005a7fc11397e9a8ad41bf10bf13f22b0a63f96f6d",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0xe"
+  },
+  "100": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x5"
+  },
+  "130": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "137": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x1"
+  },
+  "143": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0"
+  },
+  "146": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0"
+  },
+  "324": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "999": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "1088": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0"
+  },
+  "1101": {},
+  "1135": {},
+  "1329": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0"
+  },
+  "1868": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "2741": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "2818": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "4663": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0xe",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "5000": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "8453": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x46",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0xef01005a7fc11397e9a8ad41bf10bf13f22b0a63f96f6d"
+  },
+  "9745": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0"
+  },
+  "34443": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0"
+  },
+  "42161": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0xe"
+  },
+  "42220": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0"
+  },
+  "43114": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "57073": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0"
+  },
+  "59144": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "80094": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0"
+  },
+  "81457": {},
+  "167000": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "534352": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x8"
+  },
+  "747474": {
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0",
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x"
+  },
+  "7777777": {
+   "eth_getCode [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x",
+   "eth_getTransactionCount [\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"latest\"]": "0x0"
+  }
+ },
+ "fetch": {},
+ "agwArchive": []
+}
