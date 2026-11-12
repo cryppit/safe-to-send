@@ -45,3 +45,18 @@ test("replayingFetch returns the recorded response keyed by url+body", async () 
   assert.equal(res.ok, true);
   assert.deepEqual(await res.json(), { ok: true });
 });
+
+// Review-Focus #3, EVM path: an empty store must FAIL even when the verdict defaults to "unknown".
+test("a live-chain vector with an empty store fails even when the verdict defaults to unknown", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "sts-conf2-"));
+  mkdirSync(join(dir, "recorded"));
+  writeFileSync(join(dir, "recorded", "u.json"), JSON.stringify({ store: {}, fetch: {}, agwArchive: [] }));
+  writeFileSync(join(dir, "vectors.json"), JSON.stringify([
+    { id: "u", input: "0x7f3a9c2e5b1d8460af2e9c7b35d10e4f6a8b2c91", chain: 4663, expect: "unknown", why: "", recorded: "u.json" },
+  ]));
+  try {
+    const r = await runConformance(join(dir, "vectors.json"), join(dir, "recorded"));
+    assert.equal(r.results[0].ok, false);
+    assert.match(r.results[0].actual, /incomplete/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

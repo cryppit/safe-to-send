@@ -13,7 +13,8 @@ git tag v1.0.0 && git push origin v1.0.0     # release.yml publishes from CI wit
 npm audit signatures                           # after publish: verify the signed attestation
 ```
 
-Trusted Publishing gives provenance automatically (≈ SLSA build L2). Note: **provenance proves where/how the package
+**Requires npm >= 11.5.1** for OIDC (Node 22 ships npm 10.x, which cannot do tokenless OIDC); `release.yml`
+upgrades npm in CI. Trusted Publishing gives provenance automatically (≈ SLSA build L2). Note: **provenance proves where/how the package
 was built, not that the code is safe** — keep 2FA/passkeys on the npm account. A manual fallback is
 `npm publish --provenance --access public` from a 2FA session.
 

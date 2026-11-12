@@ -16,7 +16,9 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@^11.5.1   # OIDC Trusted Publishing needs npm >=11.5.1 (Node 22 ships npm 10.x)
       - run: node --test 'test/*.test.js'
       - run: node scripts/conformance.mjs
       - run: node scripts/verify-archive.mjs data/abstract
       - run: npm publish --access public
+      - run: npm audit signatures
