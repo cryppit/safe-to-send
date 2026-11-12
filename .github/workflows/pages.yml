@@ -15,15 +15,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: node --test 'test/*.test.js'
+      - run: node scripts/conformance.mjs
+      - run: node scripts/conformance-page.mjs
+      - run: node scripts/verify-archive.mjs data/abstract
       - run: |
-          mkdir -p _site/data/abstract
+          mkdir -p _site/data/abstract _site/conformance
           cp -r index.html og.png src icons logos art _site/
           cp -r data/abstract/agw data/abstract/manifest.json _site/data/abstract/
           cp -r data/lists _site/data/
+          cp -r conformance/index.html conformance/vectors.json _site/conformance/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

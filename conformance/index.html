@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Safe to Send — conformance board</title>
+<style>
+  :root { color-scheme: dark; --bg:#0b0f14; --fg:#e6edf3; --mut:#8b98a5; --ok:#36d07a; --bad:#f2b84a; --line:#1c2430; }
+  body { background:var(--bg); color:var(--fg); font:15px/1.5 system-ui,sans-serif; margin:0; padding:24px; }
+  main { max-width:860px; margin:0 auto; }
+  h1 { font-size:20px; margin:0 0 4px; } p { color:var(--mut); margin:0 0 20px; }
+  .status { font-weight:700; } .status.PASS { color:var(--ok); } .status.FAIL { color:var(--bad); }
+  table { width:100%; border-collapse:collapse; } th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); }
+  th { color:var(--mut); font-weight:600; } tr.bad td { color:var(--bad); } code { color:var(--fg); }
+</style></head>
+<body><main>
+  <h1>Safe to Send — conformance board</h1>
+  <p>Known address vectors across the chains, replayed through the checker. <span class="status PASS">PASS</span>
+     — 21/21 pass · run 2026-11-12.</p>
+  <table>
+    <thead><tr><th>vector</th><th>chain</th><th>expect</th><th>actual</th><th>result</th></tr></thead>
+    <tbody>
+      <tr class="ok">
+        <td><code>agw-on-arbitrum</code></td><td>42161</td>
+        <td>stop</td><td>stop</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>agw-on-bnb</code></td><td>56</td>
+        <td>stop</td><td>stop</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>agw-on-zksync</code></td><td>324</td>
+        <td>caution</td><td>caution</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>badchecksum-on-ethereum</code></td><td>1</td>
+        <td>stop</td><td>stop</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>eip7702-on-base</code></td><td>8453</td>
+        <td>safe</td><td>safe</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>key-wallet-on-bnb</code></td><td>56</td>
+        <td>safe</td><td>safe</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>safe-eoa-on-op</code></td><td>10</td>
+        <td>safe</td><td>safe</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>safe-eth-only-on-bnb</code></td><td>56</td>
+        <td>stop</td><td>stop</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>stellar-exchange-memo</code></td><td>stellar</td>
+        <td>format</td><td>format</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>unused-on-bnb</code></td><td>56</td>
+        <td>unknown</td><td>unknown</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>unused-on-robinhood</code></td><td>4663</td>
+        <td>unknown</td><td>unknown</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>usdc-contract-on-arbitrum</code></td><td>42161</td>
+        <td>stop</td><td>stop</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>usdc-contract-on-celo</code></td><td>42220</td>
+        <td>stop</td><td>stop</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>usdc-contract-on-ethereum</code></td><td>1</td>
+        <td>stop</td><td>stop</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>usdc-contract-on-linea</code></td><td>59144</td>
+        <td>stop</td><td>stop</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>usdc-contract-on-mantle</code></td><td>5000</td>
+        <td>stop</td><td>stop</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>usdc-contract-on-op</code></td><td>10</td>
+        <td>stop</td><td>stop</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>vitalik-7702-on-bnb</code></td><td>56</td>
+        <td>safe</td><td>safe</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>weth-contract-on-ink</code></td><td>57073</td>
+        <td>stop</td><td>stop</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>wrongnetwork-btc-on-base</code></td><td>8453</td>
+        <td>stop</td><td>stop</td>
+        <td>PASS</td></tr>
+      <tr class="ok">
+        <td><code>xrp-exchange-tag</code></td><td>xrp</td>
+        <td>caution</td><td>caution</td>
+        <td>PASS</td></tr>
+    </tbody>
+  </table>
+</main></body></html>

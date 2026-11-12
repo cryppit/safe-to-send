@@ -5,18 +5,37 @@
   "type": "module",
   "license": "MIT",
   "homepage": "https://cryppit.github.io/safe-to-send/",
-  "repository": { "type": "git", "url": "git+https://github.com/cryppit/safe-to-send.git" },
-  "engines": { "node": ">=22" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cryppit/safe-to-send.git"
+  },
+  "engines": {
+    "node": ">=22"
+  },
   "exports": {
-    ".": { "default": "./src/index.js" },
+    ".": {
+      "default": "./src/index.js"
+    },
     "./chains": "./src/chains.js"
   },
-  "bin": { "safe-to-send": "./cli.js" },
-  "files": ["src/", "cli.js", "data/abstract/manifest.json", "data/lists/", "README.md", "LICENSE", "SECURITY.md"],
+  "bin": {
+    "safe-to-send": "./cli.js"
+  },
+  "files": [
+    "src/",
+    "cli.js",
+    "data/abstract/manifest.json",
+    "data/lists/",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
   "scripts": {
     "test": "node --test \"test/*.test.js\"",
     "archive:abstract": "node scripts/archive-abstract.mjs",
     "verify:abstract": "node scripts/verify-abstract.mjs",
-    "verify:archive": "node scripts/verify-archive.mjs data/abstract"
+    "verify:archive": "node scripts/verify-archive.mjs data/abstract",
+    "conformance": "node scripts/conformance.mjs",
+    "conformance:page": "node scripts/conformance-page.mjs"
   }
 }
