@@ -3,7 +3,10 @@
   "name": "safe-to-send-api",
   "main": "worker/index.js",
   "compatibility_date": "2026-11-01",
-  "observability": { "enabled": true },
+  // No Workers Logs: they would store each request URL, and so the address checked ("no storage, no logs").
+  "observability": { "enabled": false },
+  "workers_dev": true,
+  "preview_urls": false,
   // Rate limiting: 60 /v1/check calls per minute per IP (worker/index.js returns 429 past it). The binding is
   // approximate (it can leak several times the limit); add a zone WAF rate-limiting rule as well once the API sits on
   // a custom domain (see RELEASE.md). No KV/DO is used, keeping the "no storage" promise.

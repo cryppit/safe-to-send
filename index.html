@@ -440,9 +440,10 @@ await checkAddress(addr, "bnb");</pre>
         </div>
         <div class="dev-card">
           <b>Hosted API</b>
-          <p>One GET. CORS open. No storage, no logs.</p>
+          <p>One GET. CORS open. No storage, no logs. 60 checks a minute per IP.</p>
           <pre>GET /v1/check?address=0x…&amp;chain=56
 → { "verdict": { "level": "stop" } }</pre>
+          <p><a href="https://safe-to-send-api.station-wheres-my-swap.workers.dev/v1/chains" target="_blank" rel="noopener noreferrer">safe-to-send-api…workers.dev →</a></p>
         </div>
         <div class="dev-card">
           <b>Conformance in CI</b>

@@ -43,6 +43,24 @@ node cli.js bc1q... --chain bitcoin           # any other network: format only
 npm test                                      # replays recorded real addresses, no network
 ```
 
+As a library (`npm install @cryppit/safe-to-send`) or a command (`npx @cryppit/safe-to-send 0x<address> --chain 56`):
+
+```js
+import { checkAddress } from "@cryppit/safe-to-send";
+const { verdict } = await checkAddress("0x…", "56");   // verdict.level: "safe" | "caution" | "stop" | "unknown"
+```
+
+Or the free hosted API (keyless, read-only, CORS open, no storage or logs, 60 checks a minute per IP):
+
+```sh
+curl "https://safe-to-send-api.station-wheres-my-swap.workers.dev/v1/check?address=0x<address>&chain=56"
+curl "https://safe-to-send-api.station-wheres-my-swap.workers.dev/v1/chains"      # every chain and network it knows
+```
+
+The API runs on Cloudflare, whose shared IPs some public RPCs rate-limit or refuse: it retries once and falls back,
+and a chain it still cannot read is listed under `verdict.unread` (Lisk and Blast usually are), never assumed safe.
+The library and the page read from your own IP and are not affected. To run your own copy: `worker/` + `wrangler deploy`.
+
 The page (`index.html`) does the same in the browser; `?address=0x…&chain=56` opens a check directly, and
 `?address=bc1…&chain=bitcoin` does the same for a format check.
 
