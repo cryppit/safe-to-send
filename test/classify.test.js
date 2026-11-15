@@ -144,3 +144,10 @@ test("the same owners with a different threshold count as different", () => {
   const v = classify({ address: A, target: 56, abstractWallet: false, chains: { 56: safeOn(1, [O1, O2]), 1: safeOn(2, [O1, O2]) } });
   assert.equal(v.kind, "safe-differs");
 });
+
+test("a chain that has shut down: stop, nothing sent there can arrive", () => {
+  const v = classify(facts(81457));
+  assert.equal(v.level, "stop");
+  assert.equal(v.kind, "chain-retired");
+  assert.match(v.title, /Blast shut down on 4 Nov 2026/);
+});

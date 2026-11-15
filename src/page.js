@@ -1,6 +1,6 @@
 // The page: the form, the two tabs and the result cards. Moved out of index.html so the page can forbid inline scripts.
 import { lookup } from "./lookup.js";
-import { CHAINS, NETWORKS, chainName, chainById, targetById } from "./chains.js";
+import { CHAINS, LIVE_CHAINS, NETWORKS, chainName, chainById, targetById } from "./chains.js";
 import { mountFlow } from "./flow.js";
 import { parseLists } from "./lists.js";
 import { mountPicker } from "./picker.js";
@@ -32,18 +32,19 @@ const syncLogo = () => { picker.sync(); scopeLine(); };
 const scopeLine = () => {
   const t = targetById(targetOf(select.value));
   $("scope").textContent = !t ? "Pick the chain you're about to send on. The answer depends on it."
-    : typeof t.id === "number" ? `Full check: format check, plus asking public services on ${CHAINS.length} EVM chains about this address.`
+    : typeof t.id === "number" ? `Full check: format check, plus asking public services on ${LIVE_CHAINS.length} EVM chains about this address.`
     : t.reads ? `Format check, plus a read of the ${t.reads} for tag and memo settings.`
     : "Format check only: wrong network and typos. The address never leaves your browser.";
 };
 select.addEventListener("change", syncLogo);
 syncLogo();
 $("stat-chains").textContent = `${CHAINS.length + NETWORKS.length} networks`;
-$("stat-chains-dd").textContent = `${CHAINS.length} read live`;
-$("flow-read").textContent = `the address on all ${CHAINS.length} EVM chains at once, or only its format on other networks`;
+$("stat-chains-dd").textContent = `${LIVE_CHAINS.length} read live`;
+$("flow-read").textContent = `the address on all ${LIVE_CHAINS.length} EVM chains at once, or only its format on other networks`;
 for (const c of CHAINS) {
   const li = el("li"); li.append(el("span", {}, c.name), logo(c.id, 26));
   if (c.until) li.append(el("small", {}, `until ${new Date(c.until + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}`));
+  if (c.retired) li.append(el("small", {}, `shut down ${new Date(c.retired + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}`));
   $("chainrow").append(li);
 }
 for (const n of NETWORKS) { const li = el("li"); li.append(el("span", {}, n.name), logo(n.id, 26)); $("netrow").append(li); }
@@ -184,7 +185,8 @@ function render(r) {
   for (const [id, c] of seen) chains.append(chip(id, c, f.target));
   card.append(chains);
   if (f.abstractWallet) card.append(el("p", { className: "foot" }, f.abstractSource === "archive" ? "Found in the archive of Abstract wallets." : "Confirmed by Abstract's wallet registry."));
-  card.append(el("p", { className: "foot" }, `Read from public RPCs on ${Object.keys(f.chains).length} chains, at the latest block. Nothing was signed.`));
+  const read = Object.keys(f.chains).length;
+  card.append(el("p", { className: "foot" }, read ? `Read from public RPCs on ${read} chains, at the latest block. Nothing was signed.` : "Nothing to read: this chain has shut down. Nothing was signed."));
   out.append(card);
   play(steps, v.level);
   if (!still) for (const [i, li] of [...chains.children].entries()) li.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 300, delay: 1400 + i * 70, fill: "backwards" });
@@ -220,7 +222,7 @@ function reading() {
   const orbit = el("span", { className: "orbit" });
   for (const id of [1, 56, 8453, 42161, 2741]) orbit.append(logo(id, 20));
   const text = el("div");
-  text.append(el("b", {}, "Reading the chain…"), el("span", { className: "ld-detail" }, `The address on ${CHAINS.length} chains: is it a contract, a wallet with its own key, or nothing yet.`));
+  text.append(el("b", {}, "Reading the chain…"), el("span", { className: "ld-detail" }, `The address on ${LIVE_CHAINS.length} chains: is it a contract, a wallet with its own key, or nothing yet.`));
   const bar = el("span", { className: "ld-bar" });
   bar.setAttribute("aria-hidden", "true");
   p.setAttribute("role", "status");
@@ -231,7 +233,7 @@ function reading() {
 async function run(address, chainId) {
   if (!chainId) { picker.open(); return; }
   const go = $("go");
-  go.disabled = true; go.textContent = `Reading ${CHAINS.length} chains…`;
+  go.disabled = true; go.textContent = `Reading ${LIVE_CHAINS.length} chains…`;
   reading();
   $("out").scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
   try {
@@ -253,7 +255,7 @@ let listsOnce;
 const lists = () => (listsOnce ??= Promise.all(["ofac", "exchanges"].map((n) => fetch(`data/lists/${n}.json`).then((r) => (r.ok ? r.json() : Promise.reject(new Error(n)))))).then(([o, e]) => parseLists(o, e)).catch((e) => { listsOnce = null; throw e; }));
 
 const flow = mountFlow({
-  rig: $("rig"), dests: $("dests"), readout: $("readout"), toggle: $("flow-toggle"), chains: CHAINS, networks: NETWORKS, targetById, still,
+  rig: $("rig"), dests: $("dests"), readout: $("readout"), toggle: $("flow-toggle"), chains: LIVE_CHAINS, networks: NETWORKS, targetById, still,
   check: (address, target) => lookup(address, target, { loadShard, lists }),
   onPlay: () => $("out").replaceChildren(),
   onOpen: (address, target) => { $("addr").value = address; select.value = String(target); syncLogo(); run(address, String(target)); },

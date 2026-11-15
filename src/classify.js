@@ -8,7 +8,7 @@
 // }
 // The answer: { level: "safe" | "caution" | "stop" | "unknown", kind, title, reasons[], recovery, unread[] }, where
 // recovery says who could reach funds already sent there: "owner", "maybe", "none", or null when unknown.
-import { chainName as name } from "./chains.js";
+import { chainName as name, chainById } from "./chains.js";
 
 /** "none", "eip7702" (a key wallet that delegates to a smart-account contract), "contract", or "unknown" (unread). */
 export function kindOfCode(code) {
@@ -35,6 +35,16 @@ export function classify(f) {
   const others = Object.entries(f.chains).map(([id, c]) => [Number(id), c]).filter(([id]) => id !== t);
   const unread = others.filter(([, c]) => c.code == null).map(([id]) => id);
   const out = (v) => ({ recovery: null, reasons: [], unread, ...v });
+
+  const retired = chainById(t)?.retired;
+  if (retired) {
+    const when = new Date(retired + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+    return out({
+      level: "stop", kind: "chain-retired",
+      title: `Stop: ${name(t)} shut down on ${when}. Don't send anything there`,
+      reasons: [`${name(t)} no longer makes new blocks, so nothing sent or bridged to it can arrive. Funds already on it can be reached only through a recovery route its operator offers.`],
+    });
+  }
 
   if (f.abstractWallet) {
     if (t === 2741) {

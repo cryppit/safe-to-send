@@ -20,3 +20,12 @@ test("no RPC uses a banned provider, and chain IDs are unique", () => {
   for (const c of CHAINS) for (const u of c.rpcs) assert.doesNotMatch(u, /drpc|1rpc/i, u);
   assert.equal(new Set(CHAINS.map((c) => c.id)).size, CHAINS.length);
 });
+
+test("retired chains carry their shutdown date and no RPCs, and LIVE_CHAINS leaves them out", async () => {
+  const { LIVE_CHAINS } = await import("../src/chains.js");
+  const retired = CHAINS.filter((c) => c.retired);
+  assert.deepEqual(retired.map((c) => [c.id, c.retired]).sort(), [[1101, "2026-07-01"], [1135, "2026-11-02"], [81457, "2026-11-04"]]);
+  for (const c of retired) assert.deepEqual(c.rpcs, []);
+  assert.equal(LIVE_CHAINS.length, CHAINS.length - 3);
+  assert.ok(LIVE_CHAINS.every((c) => !c.retired && c.rpcs.length > 0));
+});

@@ -1,10 +1,12 @@
 // The EVM chains a check reads. Public RPCs only, no keys, each answering browsers (CORS); checked with eth_chainId on
 // 26 Oct 2026 and, for the chains from Polygon on, 6 Nov 2026; the Tenderly fallbacks on 15 Nov 2026. Each list is tried in order. dRPC and 1RPC are never used.
+// `retired` marks a chain that has shut down (no new blocks): it is never read, and sending to it is a stop. Polygon
+// zkEVM sunset 1 Jul 2026, Lisk Chain 2 Nov 2026, Blast 4 Nov 2026.
 // Kaia is left out on purpose: an account there can change its key, so "a key works on every chain" would not hold.
 export const CHAINS = [
   { id: 1, name: "Ethereum", logo: "ethereum", rpcs: ["https://ethereum-rpc.publicnode.com", "https://rpc.mevblocker.io"], explorer: "https://etherscan.io/address/" },
   { id: 56, name: "BNB Chain", logo: "binance-smart-chain", rpcs: ["https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org"], explorer: "https://bscscan.com/address/" },
-  { id: 8453, name: "Base", logo: "base", rpcs: ["https://mainnet.base.org", "https://base-rpc.publicnode.com", "https://base.gateway.tenderly.co"], explorer: "https://basescan.org/address/" },
+  { id: 8453, name: "Base", logo: "base", rpcs: ["https://mainnet.base.org", "https://base-rpc.publicnode.com", "https://base.gateway.tenderly.co", "https://base.meowrpc.com"], explorer: "https://basescan.org/address/" },
   { id: 42161, name: "Arbitrum One", logo: "arbitrum-one", rpcs: ["https://arb1.arbitrum.io/rpc", "https://arbitrum-one-rpc.publicnode.com", "https://arbitrum.gateway.tenderly.co"], explorer: "https://arbiscan.io/address/" },
   { id: 10, name: "OP Mainnet", logo: "optimism", rpcs: ["https://mainnet.optimism.io", "https://optimism-rpc.publicnode.com", "https://optimism.gateway.tenderly.co"], explorer: "https://optimistic.etherscan.io/address/" },
   { id: 43114, name: "Avalanche C-Chain", logo: "avalanche", rpcs: ["https://api.avax.network/ext/bc/C/rpc", "https://avalanche-c-chain-rpc.publicnode.com"], explorer: "https://snowtrace.io/address/" },
@@ -19,9 +21,9 @@ export const CHAINS = [
   { id: 146, name: "Sonic", logo: "sonic", rpcs: ["https://rpc.soniclabs.com", "https://sonic-rpc.publicnode.com"], explorer: "https://sonicscan.org/address/" },
   { id: 42220, name: "Celo", logo: "celo", rpcs: ["https://forno.celo.org", "https://celo-rpc.publicnode.com"], explorer: "https://celoscan.io/address/" },
   { id: 5000, name: "Mantle", logo: "mantle", rpcs: ["https://rpc.mantle.xyz", "https://mantle-rpc.publicnode.com"], explorer: "https://mantlescan.xyz/address/" },
-  { id: 81457, name: "Blast", logo: "blast", rpcs: ["https://rpc.blast.io", "https://blast-rpc.publicnode.com"], explorer: "https://blastscan.io/address/" },
+  { id: 81457, name: "Blast", logo: "blast", rpcs: [], explorer: "https://blastscan.io/address/", retired: "2026-11-04" },
   { id: 2818, name: "Morph", logo: "morph", rpcs: ["https://rpc-bgw.morph.network", "https://rpc-quicknode.morph.network"], explorer: "https://explorer.morph.network/address/" },
-  { id: 1101, name: "Polygon zkEVM", logo: "polygonzkevm", rpcs: ["https://zkevm-rpc.com"], explorer: "https://zkevm.polygonscan.com/address/" },
+  { id: 1101, name: "Polygon zkEVM", logo: "polygonzkevm", rpcs: [], explorer: "https://zkevm.polygonscan.com/address/", retired: "2026-07-01" },
   { id: 80094, name: "Berachain", logo: "berachain", rpcs: ["https://rpc.berachain.com", "https://berachain-rpc.publicnode.com"], explorer: "https://berascan.com/address/" },
   { id: 999, name: "HyperEVM", logo: "hyper-evm", rpcs: ["https://rpc.hyperliquid.xyz/evm"], explorer: "https://hyperevmscan.io/address/" },
   { id: 57073, name: "Ink", logo: "ink", rpcs: ["https://rpc-gel.inkonchain.com", "https://ink-rpc.publicnode.com", "https://ink.gateway.tenderly.co"], explorer: "https://explorer.inkonchain.com/address/" },
@@ -36,7 +38,7 @@ export const CHAINS = [
   { id: 1868, name: "Soneium", logo: "soneium", rpcs: ["https://rpc.soneium.org"], explorer: "https://soneium.blockscout.com/address/" },
   { id: 7777777, name: "Zora", logo: "zora", rpcs: ["https://rpc.zora.energy"], explorer: "https://explorer.zora.energy/address/" },
   { id: 34443, name: "Mode", logo: "mode", rpcs: ["https://mainnet.mode.network"], explorer: "https://explorer.mode.network/address/" },
-  { id: 1135, name: "Lisk", logo: "lisk", rpcs: ["https://rpc.api.lisk.com", "https://lisk.gateway.tenderly.co"], explorer: "https://blockscout.lisk.com/address/" },
+  { id: 1135, name: "Lisk", logo: "lisk", rpcs: [], explorer: "https://blockscout.lisk.com/address/", retired: "2026-11-02" },
 ];
 
 // Networks a check knows by address format. Each id is a chain in addresses.js. Those with `reads` are also asked one
@@ -62,6 +64,9 @@ export const NETWORKS = [
   { id: "aleo", name: "Aleo", logo: "token-aleo" },
   { id: "fogo", name: "Fogo", logo: "token-fogo" },
 ];
+
+/** The chains a check reads: every chain that has not shut down. */
+export const LIVE_CHAINS = CHAINS.filter((c) => !c.retired);
 
 const byId = new Map(CHAINS.map((c) => [c.id, c]));
 export const chainName = (id) => byId.get(id)?.name ?? NETWORKS.find((n) => n.id === id)?.name ?? `chain ${id}`;

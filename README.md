@@ -58,7 +58,7 @@ curl "https://safe-to-send-api.station-wheres-my-swap.workers.dev/v1/chains"    
 ```
 
 The API runs on Cloudflare, whose shared IPs some public RPCs rate-limit or refuse: it retries once and falls back,
-and a chain it still cannot read is listed under `verdict.unread` (Lisk and Blast usually are), never assumed safe.
+and a chain it still cannot read is listed under `verdict.unread`, never assumed safe.
 The library and the page read from your own IP and are not affected. To run your own copy: `worker/` + `wrangler deploy`.
 
 The page (`index.html`) does the same in the browser; `?address=0x…&chain=56` opens a check directly, and
@@ -141,7 +141,9 @@ Abstract shuts down.
 
 Public JSON-RPC endpoints without keys, two per chain where available, all answering browsers (CORS), checked on 26 Oct
 2026: Ethereum, BNB Chain, Base, Arbitrum One, OP Mainnet, Avalanche C-Chain, Linea, ZKsync Era, Scroll, Gnosis,
-Unichain, Robinhood Chain, Abstract, Sonic, Celo, Mantle, Blast, Berachain, HyperEVM and Ink (`src/chains.js`).
+Unichain, Robinhood Chain, Abstract, Sonic, Celo, Mantle, Berachain, HyperEVM and Ink (`src/chains.js`). Chains that
+have shut down are kept but never read, and sending to one is a stop: Polygon zkEVM (1 Jul 2026), Lisk (2 Nov 2026)
+and Blast (4 Nov 2026).
 dRPC and 1RPC are never used. Kaia is left out because an account there can change its key. The endpoints are rate
 limited and offered as is.
 

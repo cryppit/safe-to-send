@@ -20,7 +20,7 @@ export async function handle(request, env = {}) {
 
   if (url.pathname === "/v1/health") return json({ ok: true });
   if (url.pathname === "/v1/chains") {
-    return json({ chains: CHAINS.map((c) => ({ id: c.id, name: c.name })), networks: NETWORKS.map((n) => ({ id: n.id, name: n.name })) });
+    return json({ chains: CHAINS.map((c) => ({ id: c.id, name: c.name, ...(c.retired && { retired: c.retired }) })), networks: NETWORKS.map((n) => ({ id: n.id, name: n.name })) });
   }
   if (url.pathname === "/v1/check") {
     const address = url.searchParams.get("address");

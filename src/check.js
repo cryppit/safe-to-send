@@ -1,7 +1,7 @@
 // Read what every chain says about one address, then classify sending to it on one chain. Works the same in a
 // browser and in Node; `clients` and `loadShard` are swapped for recorded answers in the tests.
 import { makeRpc } from "./rpc.js";
-import { CHAINS, chainById } from "./chains.js";
+import { LIVE_CHAINS, chainById } from "./chains.js";
 import { ABSTRACT, normalize, shardOf, inShard } from "./archive.js";
 import { classify, kindOfCode } from "./classify.js";
 
@@ -68,7 +68,7 @@ async function readChain(address, rpc, isTarget) {
  * Check sending to `address` on chain `target` (a chain ID).
  * `loadShard(key)` returns the archive shard for addresses starting 0x<key> (a Uint8Array), or null if there is none.
  */
-export async function check(address, target, { clients = clientsFor, loadShard = async () => null, chains = CHAINS } = {}) {
+export async function check(address, target, { clients = clientsFor, loadShard = async () => null, chains = LIVE_CHAINS } = {}) {
   try {
     normalize(address);
   } catch {
@@ -77,8 +77,16 @@ export async function check(address, target, { clients = clientsFor, loadShard =
   if (!chainById(target)) return { error: "bad-chain", message: `Unknown chain ${target}.` };
   const addr = address.toLowerCase();
 
+  // A chain that has shut down makes no new blocks: the answer is a stop, and nothing needs reading.
+  if (chainById(target).retired) {
+    const facts = { address: addr, target, chains: {}, abstractWallet: false, abstractSource: null };
+    return { facts, verdict: classify(facts) };
+  }
+
   const read = await Promise.all(chains.map((c) => readChain(addr, clients(c), c.id === target).then((f) => [c.id, f])));
   const facts = { address: addr, target, chains: Object.fromEntries(read), abstractWallet: false, abstractSource: null };
+  // The destination chain decides the answer: if its endpoints did not answer (often a passing rate limit), ask once more.
+  if (facts.chains[target]?.code === null) facts.chains[target] = await readChain(addr, clients(chainById(target)), true);
 
   // The archive answers even after Abstract is gone; while Abstract runs, its AGW registry is asked too.
   const shard = await loadShard(shardOf(addr)).catch(() => null);

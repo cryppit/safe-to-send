@@ -103,3 +103,40 @@ test("a Safe's owners are read, not just counted", async () => {
   const r = await check("0x" + "11".repeat(20), 1, { clients: client, chains: [{ id: 1, name: "Ethereum" }] });
   assert.deepEqual(r.facts.chains[1].safe, { threshold: 2, owners: 2, signers: ["0x" + a, "0x" + b] });
 });
+
+// Chains that have shut down (Blast, Lisk, Polygon zkEVM) are never read; a counting fake RPC shows what is asked.
+const counting = () => {
+  const asked = [];
+  const clients = (c) => async (method) => { asked.push(c.id); return method === "eth_getCode" ? "0x" : "0x0"; };
+  return { asked, clients };
+};
+
+test("a retired chain as the destination: stop, with no network calls", async () => {
+  const { asked, clients } = counting();
+  const r = await check("0x00000000000000000000000000000000000000aa", 81457, { clients });
+  assert.equal(r.verdict.level, "stop");
+  assert.equal(r.verdict.kind, "chain-retired");
+  assert.deepEqual(asked, []);
+});
+
+test("a check on a live chain never asks a retired one, and lists none of them as unread", async () => {
+  const { asked, clients } = counting();
+  const r = await check("0x00000000000000000000000000000000000000aa", 8453, { clients });
+  for (const id of [81457, 1135, 1101]) {
+    assert.ok(!asked.includes(id), `asked retired chain ${id}`);
+    assert.ok(!(id in r.facts.chains));
+  }
+  assert.deepEqual(r.verdict.unread, []);
+});
+
+test("if the destination chain does not answer, it is read once more before giving up", async () => {
+  let baseCalls = 0;
+  const clients = (c) => async (method) => {
+    if (c.id === 8453 && ++baseCalls <= 2) throw new Error("rate limited"); // the first code + nonce pair fails
+    return method === "eth_getCode" ? "0x" : "0x5";
+  };
+  const r = await check("0x00000000000000000000000000000000000000aa", 8453, { clients });
+  assert.equal(r.facts.chains[8453].code, "0x");
+  assert.equal(r.facts.chains[8453].nonce, 5);
+  assert.notEqual(r.verdict.kind, "unreadable");
+});
