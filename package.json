@@ -1,6 +1,6 @@
 {
   "name": "@cryppit/safe-to-send",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Paste an address and a chain: see whether funds sent there can be reached, before you send. Read-only, keyless.",
   "type": "module",
   "license": "MIT",
