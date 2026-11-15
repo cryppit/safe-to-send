@@ -4,8 +4,8 @@
   "main": "worker/index.js",
   "compatibility_date": "2026-11-01",
   "observability": { "enabled": true },
-  // Rate limiting: the Workers rate-limit binding is approximate (it can leak several times the configured limit),
-  // so pair it with a zone WAF rate-limiting rule in the Cloudflare dashboard (see RELEASE.md). No KV/DO is used,
-  // keeping the "no storage" promise. Uncomment and set an id when enabling the binding:
-  // "ratelimits": [{ "name": "CHECK_RL", "namespace_id": "1001", "simple": { "limit": 60, "period": 60 } }]
+  // Rate limiting: 60 /v1/check calls per minute per IP (worker/index.js returns 429 past it). The binding is
+  // approximate (it can leak several times the limit); add a zone WAF rate-limiting rule as well once the API sits on
+  // a custom domain (see RELEASE.md). No KV/DO is used, keeping the "no storage" promise.
+  "ratelimits": [{ "name": "CHECK_RL", "namespace_id": "1001", "simple": { "limit": 60, "period": 60 } }]
 }

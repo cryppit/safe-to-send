@@ -52,3 +52,32 @@ test("an unknown path returns 404", async () => {
   const res = await handle(req("/nope"));
   assert.equal(res.status, 404);
 });
+
+// Rate limit: /v1/check is the only route that reaches upstream RPCs, so it is the one the CHECK_RL binding guards.
+const limiter = (success) => {
+  const keys = [];
+  return { keys, limit: async ({ key }) => { keys.push(key); return { success }; } };
+};
+const reqFrom = (path, ip) => new Request(`https://api.example${path}`, { headers: { "cf-connecting-ip": ip } });
+
+test("GET /v1/check over the rate limit returns 429 and never calls the library", async () => {
+  const rl = limiter(false);
+  const res = await handle(reqFrom(`/v1/check?address=${fx.address}&chain=56`, "203.0.113.7"), { ...env, CHECK_RL: rl });
+  assert.equal(res.status, 429);
+  assert.equal(res.headers.get("retry-after"), "60");
+  assert.equal(res.headers.get("access-control-allow-origin"), "*");
+  assert.deepEqual(rl.keys, ["203.0.113.7"]);
+  assert.equal((await res.json()).error, "rate-limited");
+});
+test("GET /v1/check under the rate limit answers normally, keyed by the caller's IP", async () => {
+  const rl = limiter(true);
+  const res = await handle(reqFrom(`/v1/check?address=${fx.address}&chain=56`, "198.51.100.2"), { ...env, CHECK_RL: rl });
+  assert.equal(res.status, 200);
+  assert.deepEqual(rl.keys, ["198.51.100.2"]);
+});
+test("/v1/chains and /v1/health are not rate limited", async () => {
+  const rl = limiter(false);
+  assert.equal((await handle(reqFrom("/v1/chains", "203.0.113.7"), { CHECK_RL: rl })).status, 200);
+  assert.equal((await handle(reqFrom("/v1/health", "203.0.113.7"), { CHECK_RL: rl })).status, 200);
+  assert.deepEqual(rl.keys, []);
+});

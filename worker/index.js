@@ -26,6 +26,16 @@ export async function handle(request, env = {}) {
     const address = url.searchParams.get("address");
     const chain = url.searchParams.get("chain");
     if (!address || !chain) return json({ error: "missing-params", message: "address and chain are required" }, 400);
+    // Per-IP limit on the one route that reaches upstream RPCs (binding CHECK_RL in wrangler.jsonc; absent in tests).
+    if (env.CHECK_RL) {
+      const { success } = await env.CHECK_RL.limit({ key: request.headers.get("cf-connecting-ip") ?? "unknown" });
+      if (!success) {
+        return new Response(JSON.stringify({ error: "rate-limited", message: "too many requests, try again in a minute" }), {
+          status: 429,
+          headers: { "content-type": "application/json; charset=utf-8", "retry-after": "60", ...CORS },
+        });
+      }
+    }
     const options = env.clients
       ? { clients: env.clients, fetch: env.fetch, loadShard: env.loadShard }
       : (() => { const g = guardedFetch(); return { clients: (c) => makeRpc(c.rpcs, { fetch: g, timeoutMs: 6000 }), fetch: g, loadShard: defaultLoadShard({ fetch: g }) }; })();
