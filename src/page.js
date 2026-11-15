@@ -137,7 +137,8 @@ function route(v, f) {
   const broken = v.level === "stop";
   const first = bar(false); first.style.setProperty("--c2", "var(--blue)");
   node("s-plain", [ico(keyed ? "key" : "wallet")], short, KIND[v.kind] ?? "Address", null, first);
-  if (v.kind === "sanctioned") node("s-lost", [ico("wallet")], "On the OFAC list", "exact match", "✕", bar(true));
+  if (v.kind === "chain-retired") node("s-unknown", [ico("wallet")], "Not read", `${chainName(f.target)} has shut down`, "–", bar(true));
+  else if (v.kind === "sanctioned") node("s-lost", [ico("wallet")], "On the OFAC list", "exact match", "✕", bar(true));
   else if (keyed) node("s-ok", [ico("key")], "One key", "works on every chain", "✓", bar(broken));
   else if (homes.length) node("s-ok", [logo(homes[0], 30)], `Lives on ${chainName(homes[0])}${homes.length > 1 ? ` +${homes.length - 1}` : ""}`, homes.includes(f.target) ? "and here" : "only there", "✓", bar(broken));
   else node("s-unknown", [ico("wallet")], "Lives nowhere yet", "no code, no history", "?", bar(true));
@@ -180,10 +181,9 @@ function render(r) {
   for (const reason of v.reasons) ul.append(el("li", {}, reason));
   card.append(ul);
   const seen = Object.entries(f.chains).map(([id, c]) => [Number(id), c]).filter(([id, c]) => id === f.target || c.code == null || c.code !== "0x" || c.nonce > 0);
-  card.append(el("p", { className: "hint" }, "What each chain says about this address (only chains where it was seen, plus the one you picked):"));
   const chains = el("ul", { className: "chains" });
   for (const [id, c] of seen) chains.append(chip(id, c, f.target));
-  card.append(chains);
+  if (seen.length) card.append(el("p", { className: "hint" }, "What each chain says about this address (only chains where it was seen, plus the one you picked):"), chains);
   if (f.abstractWallet) card.append(el("p", { className: "foot" }, f.abstractSource === "archive" ? "Found in the archive of Abstract wallets." : "Confirmed by Abstract's wallet registry."));
   const read = Object.keys(f.chains).length;
   card.append(el("p", { className: "foot" }, read ? `Read from public RPCs on ${read} chains, at the latest block. Nothing was signed.` : "Nothing to read: this chain has shut down. Nothing was signed."));

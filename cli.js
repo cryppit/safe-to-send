@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Usage: node cli.js <address or ENS name> --chain <chain id or name> [--json]
+// Usage: safe-to-send <address or ENS name> --chain <chain id or name> [--json]   (npx @cryppit/safe-to-send …, or node cli.js …)
 // On an EVM chain it checks, from public RPCs only, whether funds sent to the address can be reached.
 // On any other network it checks the address format only. Nothing is signed.
 import { readFileSync, existsSync } from "node:fs";
@@ -15,7 +15,7 @@ const address = args.find((_, i) => !flagged.has(i));
 const chainArg = flag("chain");
 const target = [...CHAINS, ...NETWORKS].find((c) => String(c.id) === chainArg || squash(c.name) === squash(chainArg));
 if (!address || !target) {
-  console.error(`Usage: node cli.js <address or ENS name> --chain <id or name> [--json]\nRead live: ${CHAINS.map((c) => `${c.id} ${c.name}`).join(", ")}\nFormat only: ${NETWORKS.map((n) => n.id).join(", ")}`);
+  console.error(`Usage: npx @cryppit/safe-to-send <address or ENS name> --chain <id or name> [--json]\nRead live: ${CHAINS.map((c) => `${c.id} ${c.name}`).join(", ")}\nFormat only: ${NETWORKS.map((n) => n.id).join(", ")}`);
   process.exit(2);
 }
 

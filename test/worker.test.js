@@ -81,3 +81,14 @@ test("/v1/chains and /v1/health are not rate limited", async () => {
   assert.equal((await handle(reqFrom("/v1/health", "203.0.113.7"), { CHECK_RL: rl })).status, 200);
   assert.deepEqual(rl.keys, []);
 });
+
+test("GET /.well-known/security.txt serves the site's security.txt, with the API as its canonical address", async () => {
+  const site = readFileSync(new URL("../public/.well-known/security.txt", import.meta.url), "utf8");
+  const res = await handle(req("/.well-known/security.txt"));
+  assert.equal(res.status, 200);
+  assert.match(res.headers.get("content-type"), /^text\/plain/);
+  const body = await res.text();
+  const strip = (t) => t.split("\n").filter((l) => l && !l.startsWith("Canonical:")).join("\n");
+  assert.equal(strip(body), strip(site));
+  assert.match(body, /^Canonical: https:\/\/safe-to-send-api\.station-wheres-my-swap\.workers\.dev\/\.well-known\/security\.txt$/m);
+});

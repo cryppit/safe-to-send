@@ -10,6 +10,9 @@ const CORS = {
   "access-control-allow-methods": "GET, OPTIONS",
   "access-control-allow-headers": "*",
 };
+// RFC 9116, the same contacts as the site's public/.well-known/security.txt (test/worker.test.js keeps them equal).
+const SECURITY_TXT = "Contact: https://github.com/cryppit/safe-to-send/security/advisories/new\nContact: mailto:security@cryppit.com\nExpires: 2027-11-12T00:00:00.000Z\nPreferred-Languages: en\nCanonical: https://safe-to-send-api.station-wheres-my-swap.workers.dev/.well-known/security.txt\nPolicy: https://github.com/cryppit/safe-to-send/blob/main/SECURITY.md\n";
+
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", ...CORS } });
 
@@ -19,6 +22,7 @@ export async function handle(request, env = {}) {
   if (request.method !== "GET") return json({ error: "method-not-allowed" }, 405);
 
   if (url.pathname === "/v1/health") return json({ ok: true });
+  if (url.pathname === "/.well-known/security.txt") return new Response(SECURITY_TXT, { headers: { "content-type": "text/plain; charset=utf-8", ...CORS } });
   if (url.pathname === "/v1/chains") {
     return json({ chains: CHAINS.map((c) => ({ id: c.id, name: c.name, ...(c.retired && { retired: c.retired }) })), networks: NETWORKS.map((n) => ({ id: n.id, name: n.name })) });
   }
