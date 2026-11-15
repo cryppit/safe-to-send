@@ -25,4 +25,9 @@ jobs:
       - run: |
           spec="$(node -p 'const p=require("./package.json"); p.name+"@"+p.version')"
           if npm view "$spec" version >/dev/null 2>&1; then echo "$spec is already on npm, skipping publish"; else npm publish --access public; fi
-      - run: npm audit signatures
+      # Verify the published package's registry signature. The repo has no dependencies, so `npm audit signatures`
+      # in the checkout finds nothing to audit and fails: audit a throwaway install of the published version instead.
+      - run: |
+          spec="$(node -p 'const p=require("./package.json"); p.name+"@"+p.version')"
+          mkdir -p "$RUNNER_TEMP/verify" && cd "$RUNNER_TEMP/verify" && npm init -y >/dev/null
+          npm install --no-audit --no-fund "$spec" && npm audit signatures
