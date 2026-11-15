@@ -13,6 +13,17 @@ const CORS = {
 // RFC 9116, the same contacts as the site's public/.well-known/security.txt (test/worker.test.js keeps them equal).
 const SECURITY_TXT = "Contact: https://github.com/cryppit/safe-to-send/security/advisories/new\nExpires: 2027-11-12T00:00:00.000Z\nPreferred-Languages: en\nCanonical: https://safe-to-send-api.station-wheres-my-swap.workers.dev/.well-known/security.txt\nPolicy: https://github.com/cryppit/safe-to-send/blob/main/SECURITY.md\n";
 
+// What a visitor to the bare address sees, instead of a 404.
+const INDEX = {
+  name: "Safe to Send API",
+  about: "Warns before a send to an address that can't receive funds on the destination chain. Keyless, read-only, no storage or logs.",
+  endpoints: ["GET /v1/check?address=<address or ENS name>&chain=<chain id or name>", "GET /v1/chains", "GET /v1/health"],
+  example: "/v1/check?address=0xd8b17dbd34391993ee11b501e6275bbc715e2529&chain=56",
+  limit: "60 checks a minute per IP",
+  docs: "https://github.com/cryppit/safe-to-send#use-it",
+  site: "https://cryppit.github.io/safe-to-send/",
+};
+
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", ...CORS } });
 
@@ -21,6 +32,12 @@ export async function handle(request, env = {}) {
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
   if (request.method !== "GET") return json({ error: "method-not-allowed" }, 405);
 
+  if (url.pathname === "/") {
+    // Pretty-printed: people open this one in a browser.
+    return new Response(JSON.stringify({ ...INDEX, example: new URL(INDEX.example, url).href }, null, 2), {
+      headers: { "content-type": "application/json; charset=utf-8", ...CORS },
+    });
+  }
   if (url.pathname === "/v1/health") return json({ ok: true });
   if (url.pathname === "/.well-known/security.txt") return new Response(SECURITY_TXT, { headers: { "content-type": "text/plain; charset=utf-8", ...CORS } });
   if (url.pathname === "/v1/chains") {

@@ -48,6 +48,18 @@ test("OPTIONS preflight returns permissive CORS headers", async () => {
   assert.equal(res.status, 204);
   assert.equal(res.headers.get("access-control-allow-origin"), "*");
 });
+test("GET / describes the API instead of returning 404", async () => {
+  const res = await handle(req("/"));
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get("access-control-allow-origin"), "*");
+  const body = await res.json();
+  assert.equal(body.name, "Safe to Send API");
+  assert.ok(body.endpoints.some((e) => e.startsWith("GET /v1/check?address=")));
+  assert.ok(body.endpoints.includes("GET /v1/chains") && body.endpoints.includes("GET /v1/health"));
+  assert.match(body.example, /^https:\/\/api\.example\/v1\/check\?address=0x[0-9a-fA-F]{40}&chain=/);
+  assert.match(body.docs, /^https:\/\/github\.com\/cryppit\/safe-to-send/);
+});
+
 test("an unknown path returns 404", async () => {
   const res = await handle(req("/nope"));
   assert.equal(res.status, 404);
