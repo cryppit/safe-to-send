@@ -7,8 +7,9 @@ RPCs and public ledgers only.
 
 Please report privately — do not open a public issue or PR for a security bug.
 
-- Preferred: GitHub **private vulnerability reporting** on this repository (Security → Report a vulnerability).
-- Or email the maintainer (see `.well-known/security.txt` on the site).
+- GitHub **private vulnerability reporting** on this repository (Security → Report a vulnerability):
+  https://github.com/cryppit/safe-to-send/security/advisories/new
+- The same contact is published in `/.well-known/security.txt` on the site and on the hosted API.
 
 We aim to acknowledge within 1–2 working days and to coordinate a fix and disclosure. We follow coordinated
 disclosure with a default window of up to 90 days, negotiable by severity. We will credit reporters who want it.

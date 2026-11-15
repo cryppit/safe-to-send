@@ -43,25 +43,26 @@ npx wrangler deploy          # deploys worker/index.js (see wrangler.jsonc)
 **Do not announce or link the endpoint until the §0 rate limit is live** — `wrangler deploy` exposes it publicly.
 No KV/Durable Objects are used — the "no storage" promise holds. Confirm `/.well-known/security.txt` resolves.
 
-## 3. Archive mirrors — GitHub + R2 + Arweave
+## 3. Archive mirrors — GitHub + Cloudflare R2 (two hosts)
 
-The frozen archive (`data/abstract/`) is published to three mirrors; the SHA-256 manifest makes each independently
-verifiable:
+The frozen archive (`data/abstract/`) is mirrored on two independent hosts; the SHA-256 manifest makes each one
+verifiable with the published script, straight from its URL:
 
 ```sh
-# Mirror 1 — GitHub release asset (and the repo itself / Pages at cryppit.github.io/safe-to-send/data/abstract)
-gh release create v1.0.0 --title "Safe to Send 1.0.0" --notes "Library, API, conformance, frozen Abstract archive."
+# Host 1 — GitHub: Pages (https://cryppit.github.io/safe-to-send/data/abstract) and the release asset of every tag
+gh release create v<version> --title "Safe to Send <version>" --notes-file <notes> <archive>.tar.gz
 
-# Mirror 2 — Cloudflare R2 (same account as the Worker)
-npx wrangler r2 object put safe-to-send/abstract/manifest.json --file data/abstract/manifest.json
-for f in data/abstract/agw/*.bin; do npx wrangler r2 object put "safe-to-send/abstract/agw/$(basename "$f")" --file "$f"; done
+# Host 2 — Cloudflare R2, bucket `safe-to-send`, public read-only at https://pub-0ec10ea208a948afb353c71dc315691e.r2.dev/abstract
+#   (wrangler r2 object put … --remote for manifest.json and each agw/<xx>.bin; --remote matters: without it
+#    wrangler 4 writes to a local simulator)
 
-# Mirror 3 — Arweave (pay-once permanent; ~a few dollars for ~29MB)
-#   e.g. with arkb or the Arweave CLI: upload data/abstract/ as a directory and record the TX id.
-
-# Verify every mirror OFFLINE (download each, then):
-node scripts/verify-archive.mjs <downloaded-mirror-dir>     # must print OK for GitHub, R2, and Arweave
+# Verify each host (must print "OK: 256 shards verified against the manifest."):
+node scripts/verify-archive.mjs https://cryppit.github.io/safe-to-send/data/abstract
+node scripts/verify-archive.mjs https://pub-0ec10ea208a948afb353c71dc315691e.r2.dev/abstract
+node scripts/verify-archive.mjs <unpacked release asset>/abstract
 ```
+
+Optional, later: a pay-once permanent copy on Arweave (a few dollars for ~29 MB). Not needed for the two-host promise.
 
 ## 4. December final-freeze (makes the archive the true last block)
 
@@ -77,7 +78,9 @@ git commit -am "chore(archive): final freeze at Abstract shutdown" && git tag v1
 
 Do the re-scan a little **before** the deadline in case Abstract's infra degrades early; the 25-Oct archive is the floor.
 
-## 5. Hardening to apply (deferred from the build)
+## 5. Hardening
 
-- **Pin GitHub Actions to full commit SHAs** in `pages.yml` and `release.yml` (currently `@v4` major tags), e.g.
-  `actions/checkout@<sha> # v4`. This closes the compromised-tag risk flagged in the research.
+- **Done (15 Nov 2026):** GitHub Actions are pinned to full commit SHAs in `pages.yml` and `release.yml` (with the
+  version in a comment), and CI installs an exact npm version. Bump them deliberately, never by tag.
+- **Spend:** Workers Paid and R2 bill usage past their free tiers with no hard cap. Keep a Cloudflare usage-based
+  billing notification on.

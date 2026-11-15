@@ -134,6 +134,10 @@ Abstract shuts down.
   SHA-256 for every shard.
 - **Checked.** `scripts/verify-abstract.mjs` picks wallets at random from the scan and confirms each one is registered
   in the AGW registry, has code on Abstract and is found in the shards; it also confirms random addresses are not found.
+- **Mirrored** on two hosts, each verifiable from its URL with the published script:
+  `node scripts/verify-archive.mjs https://cryppit.github.io/safe-to-send/data/abstract` (GitHub Pages; also attached to every
+  [release](https://github.com/cryppit/safe-to-send/releases)) and `node scripts/verify-archive.mjs https://pub-0ec10ea208a948afb353c71dc315691e.r2.dev/abstract`
+  (Cloudflare R2).
 - **Not covered.** A counterfactual AGW (an address computed from a signer but never deployed) is not in the logs, so
   it is not in the archive. While Abstract runs, the registry covers deployed wallets the archive missed.
 

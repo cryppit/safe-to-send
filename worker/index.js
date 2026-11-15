@@ -11,7 +11,7 @@ const CORS = {
   "access-control-allow-headers": "*",
 };
 // RFC 9116, the same contacts as the site's public/.well-known/security.txt (test/worker.test.js keeps them equal).
-const SECURITY_TXT = "Contact: https://github.com/cryppit/safe-to-send/security/advisories/new\nContact: mailto:security@cryppit.com\nExpires: 2027-11-12T00:00:00.000Z\nPreferred-Languages: en\nCanonical: https://safe-to-send-api.station-wheres-my-swap.workers.dev/.well-known/security.txt\nPolicy: https://github.com/cryppit/safe-to-send/blob/main/SECURITY.md\n";
+const SECURITY_TXT = "Contact: https://github.com/cryppit/safe-to-send/security/advisories/new\nExpires: 2027-11-12T00:00:00.000Z\nPreferred-Languages: en\nCanonical: https://safe-to-send-api.station-wheres-my-swap.workers.dev/.well-known/security.txt\nPolicy: https://github.com/cryppit/safe-to-send/blob/main/SECURITY.md\n";
 
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", ...CORS } });
