@@ -20,5 +20,9 @@ jobs:
       - run: node --test 'test/*.test.js'
       - run: node scripts/conformance.mjs
       - run: node scripts/verify-archive.mjs data/abstract
-      - run: npm publish --access public
+      # The first release (1.0.0) is published by hand from a 2FA session (Trusted Publishing can only be set up
+      # once the package exists), so skip a version that is already on npm instead of failing the tag build.
+      - run: |
+          spec="$(node -p 'const p=require("./package.json"); p.name+"@"+p.version')"
+          if npm view "$spec" version >/dev/null 2>&1; then echo "$spec is already on npm, skipping publish"; else npm publish --access public; fi
       - run: npm audit signatures

@@ -5,19 +5,24 @@ Everything here is run by the founder. Claude never publishes, deploys, or pushe
 
 ## 0. First, and un-skippable: rate-limit the hosted API
 
-The hosted Worker has **no built-in rate limit**. Deploying it (§2) without one exposes a public endpoint anyone can
+Without a rate limit, deploying the hosted Worker (§2) would expose a public endpoint anyone can
 hammer — running up your Cloudflare bill and getting your server IP throttled by the upstream RPCs. This is an
 abuse/cost risk to Cryppit (never a safety or privacy risk to users), and it is the one step that must not be skipped.
 
-**Before the endpoint is announced or linked**, add a **zone WAF rate-limiting rule** on the API route in the
-Cloudflare dashboard (e.g. **60 req / min / IP**). The Workers rate-limit *binding* alone is approximate (it can leak
-several times the configured limit), so the WAF rule is the real cap. Verify the route returns **HTTP 429** past the
-limit before going public.
+The Worker now ships a per-IP limit: the `CHECK_RL` binding in `wrangler.jsonc` (**60 `/v1/check` calls / min / IP**;
+`worker/index.js` returns **HTTP 429** past it). It works on the free `workers.dev` address, so it is enough to launch.
+The binding is approximate (it can leak several times the configured limit), so once the API moves to a **custom
+domain** on Cloudflare, also add a **zone WAF rate-limiting rule** on the API route (zone WAF rules do not apply to
+`workers.dev`). After deploying, verify the route returns **429** past the limit before announcing it.
 
 ## 1. Library — npm, via Trusted Publishing (no token)
 
-Configure a **Trusted Publisher** for `@cryppit/safe-to-send` on npmjs.com (Settings → Trusted Publishing), pointing
-at this repo's `release.yml`. Then publish is tokenless:
+**First release (1.0.0), by hand:** `npm login` (2FA), make sure the npm org `cryppit` exists, then
+`npm publish --access public`. Trusted Publishing can only be set up once the package exists.
+
+**From then on:** configure a **Trusted Publisher** for `@cryppit/safe-to-send` on npmjs.com (package Settings →
+Trusted Publishing), pointing at this repo's `release.yml`. Then publish is tokenless (`release.yml` skips a
+version that is already on npm, so tagging v1.0.0 after the manual publish stays green):
 
 ```sh
 git tag v1.0.0 && git push origin v1.0.0     # release.yml publishes from CI with OIDC + provenance

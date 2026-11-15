@@ -19,7 +19,7 @@
     "./chains": "./src/chains.js"
   },
   "bin": {
-    "safe-to-send": "./cli.js"
+    "safe-to-send": "cli.js"
   },
   "files": [
     "src/",
