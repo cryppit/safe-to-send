@@ -87,7 +87,8 @@ Abstract runs it also asks Abstract's AGW registry (`isAGW`).
 | Another contract on other chains only | **Stop** | usually nobody |
 | Never used on any chain checked | **Can't tell**: a new key wallet and an undeployed smart wallet look the same; send a small test | unknown |
 
-A safe answer is about whether funds can be reached, not about who the address belongs to.
+A **Safe** verdict (shown as "Reachable" on the site) means funds sent there can be reached on that chain. It says
+nothing about who owns the address or whether they are honest: check that yourself.
 
 For networks it does not read, the answers come from the address alone:
 

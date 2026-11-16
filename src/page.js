@@ -66,7 +66,7 @@ fetch("data/abstract/manifest.json").then((r) => (r.ok ? r.json() : null)).then(
   $("tag-agw").textContent = `${(m.wallets / 1e6).toFixed(2)}M Abstract wallets`;
 }).catch(() => {});
 
-const LABEL = { safe: "Safe", caution: "Caution", stop: "Stop", unknown: "Can't tell", format: "Format OK" };
+const LABEL = { safe: "Reachable", caution: "Caution", stop: "Stop", unknown: "Can't tell", format: "Format OK" };
 const chip = (id, c, target) => {
   const k = c.code == null ? "unread" : c.code === "0x" ? (c.nonce > 0 ? "key" : "none") : /^0xef0100/i.test(c.code) ? "key" : "contract";
   const what = { unread: "no answer", key: c.code === "0x" ? `key wallet, ${c.nonce} tx` : "EIP-7702", none: "unused", contract: c.safe ? `Safe ${c.safe.threshold}-of-${c.safe.owners}` : c.token ? `${c.token.symbol} token` : "contract" }[k];
@@ -79,6 +79,8 @@ const chip = (id, c, target) => {
 // The route, left to right: what the address is, where it lives, and what happens on the chain you picked.
 const KIND = { "abstract-wallet": "Abstract wallet", eip7702: "EIP-7702 account", "key-wallet": "Key wallet", "safe-here": "Safe multisig", "safe-differs": "Safe multisig", "safe-elsewhere": "Safe multisig",
   "token-contract": "Token contract", "contract-here": "Contract", "contract-elsewhere": "Contract", unused: "Never used", unreadable: "Not read" };
+// A "safe" verdict means reachable on this chain, not a judgement of the recipient, so the page says "Reachable".
+const shownTitle = (v) => (v.level === "safe" ? v.title.replace(/^Safe: /, "Reachable: ") : v.title);
 const END = { safe: ["s-ok", "✓", "Reachable"], caution: ["s-maybe", "!", "Careful"], stop: ["s-lost", "✕", "Lost"], unknown: ["s-unknown", "?", "Can't tell"], format: ["s-format", "✓", "Format OK"] };
 const shorten = (a) => (a.length > 14 ? `${a.slice(0, 6)}…${a.slice(-4)}` : a);
 const ico = (name) => el("span", { className: `ico i-${name}` });
@@ -175,7 +177,7 @@ function render(r) {
   const steps = route(v, f);
   card.append(head);
   if (r.ens) card.append(el("p", { className: "foot" }, `${r.ens.name} points to this address on Ethereum.`));
-  card.append(steps, el("p", { className: "title" }, v.title));
+  card.append(steps, el("p", { className: "title" }, shownTitle(v)));
   for (const n of r.notices ?? []) card.append(el("p", { className: "notice" }, n));
   const ul = el("ul", { className: "reasons" });
   for (const reason of v.reasons) ul.append(el("li", {}, reason));
@@ -201,7 +203,7 @@ function formatCard(r) {
   card.append(head);
   if (r.ens) card.append(el("p", { className: "foot" }, `${r.ens.name} points to this address on Ethereum.`));
   const steps = formatRoute(r);
-  card.append(steps, el("p", { className: "title" }, v.title));
+  card.append(steps, el("p", { className: "title" }, shownTitle(v)));
   if (r.what) card.append(el("p", { className: "hint" }, r.what));
   for (const n of r.notices ?? []) card.append(el("p", { className: "notice" }, n));
   const ul = el("ul", { className: "reasons" });
